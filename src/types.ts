@@ -7,17 +7,13 @@ export interface TestCase {
   explanation?: string;
 }
 
-export interface Question {
-  id: string;
-  title: string;
-  slug: string;
-  statement: string;
-  functionSignature?: string;
-  tags: string[];
-  difficulty: Difficulty;
-  starterCode?: string;
-  testCases: TestCase[];
-  hints?: string[];
-  createdAt: string;
-  updatedAt?: string;
+interface Question {
+    slug: string
+    title: string
+    difficulty: string
+    description: string
+    examples: string[]
+    functionSignature: string
+    starterCode: string
+    testCases: { input: any[]; output: any }[]
 }
