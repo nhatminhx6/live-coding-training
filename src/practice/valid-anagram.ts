@@ -8,6 +8,15 @@
 
 export default function isAnagram(...args: any[]): any {
   // TODO: Implement your solution here
-  console.log('Running isAnagram with args:', args)
-  return null
+
+    let chars = args[0]
+    let reverseString = ''
+    for (let i = chars.length; i >= 1; i--) {
+        reverseString = reverseString + chars[i]
+        console.log('chars[i] --  ',chars[i])
+    }
+
+    console.log('Running isAnagram with chars:',chars, reverseString)
+
+  return reverseString != chars
 }
