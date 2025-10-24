@@ -7,7 +7,28 @@
 // Input: nums = [3,2,4], target = 6 → Output: [1,2]
 
 export default function twoSum(...args: any[]): any {
-  // TODO: Implement your solution here
-  console.log('Running twoSum with args:', args)
+
+    let nums = args[0];
+    let sum = args[1];
+    let sumArr= []
+    console.log('Running twoSum with args:', nums,' --  ',sum)
+    //11,15,2,3,7,4
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = i + 1; j < nums.length; j++) {
+            //console.log('twoSum:', i,' --  ',j)
+            if (nums[i] + nums[j] === sum) {
+                sumArr = [i,j]
+
+                console.log('sumArr  ======>  ',sumArr,'from: ', nums[i], nums[j])
+                return sumArr
+            }
+        }
+
+    }
+
+
+
+
+
   return null
 }

@@ -16,6 +16,7 @@ export const easyQuestions = [
   return [];
 }`,
         testCases: [{ input: [[2,7,11,15], 9], output: [0,1] }]
+        //testCases: [{ input: [[11,15,2,3,7,4], 9], output: [0,1] }]
     },
     {
         slug: "reverse-string",

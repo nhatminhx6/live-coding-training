@@ -44,7 +44,7 @@ export default function QuestionList() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="max-w-[800px] mx-auto px-4 py-8">
+            <div className="mx-auto px-4 py-8">
                 <h1 className="text-2xl font-bold mb-4">JS Practice Questions</h1>
 
                 {/* Filter */}
