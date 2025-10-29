@@ -27,5 +27,5 @@ export default function isPalindrome(...args: any[]): any {
 
     console.log('Running isPalindrome with args :=== >  ', checkingNum)
 
-    return checkingNum === count; 
+    return checkingNum === count;
 }
