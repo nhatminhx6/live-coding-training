@@ -14,3 +14,4 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 button, input { font: inherit; }
+html.dark { color-scheme: dark; background: #020617; }
