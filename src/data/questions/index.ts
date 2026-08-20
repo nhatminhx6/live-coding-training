@@ -8,3 +8,10 @@ export const questions: Question[] = [
     ...mediumQuestions,
     ...hardQuestions,
 ] as Question[]
+
+// Content invariant: mọi bài tập phải có bài giải code để mở xem.
+for (const question of questions) {
+    if (!question.starterCode.trim()) {
+        throw new Error(`Practice "${question.slug}" phải có bài giải code`)
+    }
+}

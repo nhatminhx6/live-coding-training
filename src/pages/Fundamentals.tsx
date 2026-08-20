@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { fundamentals } from '../data/fundamentals'
 import { SyntaxCode } from '../components/SyntaxCode'
 
-type LearningTrack = 'javascript' | 'logic' | 'swiftui'
+type LearningTrack = 'javascript' | 'logic' | 'reactnative' | 'performance' | 'ai'
 
 const trackInfo: Record<LearningTrack, { title: string; description: string }> = {
   javascript: {
@@ -13,21 +13,32 @@ const trackInfo: Record<LearningTrack, { title: string; description: string }> =
     title: 'Logic & Algorithms',
     description: 'Cấu trúc dữ liệu, tư duy giải thuật và các patterns để phân tích bài toán.',
   },
-  swiftui: {
-    title: 'SwiftUI',
-    description: 'State management, data flow, lifecycle, navigation, concurrency và performance trong SwiftUI.',
+  reactnative: {
+    title: 'React & React Native',
+    description: 'React internals, kiến trúc React Native, native interop và tư duy Tech Lead.',
+  },
+  performance: {
+    title: 'FPS & Performance',
+    description: 'JS/UI FPS, dropped frames, FlatList, profiling, performance budget và quyết định rollout.',
+  },
+  ai: {
+    title: 'AI Work Skills',
+    description: 'Giao việc, context, verification, reusable skills, delegation và eval để làm việc với AI hiệu quả.',
   },
 }
 
 function belongsToTrack(group: string, track: LearningTrack) {
   if (track === 'javascript') return group === 'JavaScript'
-  if (track === 'swiftui') return group === 'SwiftUI'
+  if (track === 'performance') return group === 'Performance'
+  if (track === 'ai') return group === 'AI Skills'
+  if (track === 'reactnative') return group === 'React' || group === 'React Native' || group === 'Architecture'
   return group === 'Data structures' || group === 'Algorithms'
 }
 
 export default function Fundamentals() {
   const [track, setTrack] = useState<LearningTrack>('javascript')
   const [activeId, setActiveId] = useState(fundamentals[0].id)
+  const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(() => new Set())
   const lessons = useMemo(
     () => fundamentals.filter((item) => belongsToTrack(item.group, track)),
     [track],
@@ -43,6 +54,15 @@ export default function Fundamentals() {
     if (firstLesson) setActiveId(firstLesson.id)
   }
 
+  const toggleAnswer = (answerId: string) => {
+    setExpandedAnswers((current) => {
+      const next = new Set(current)
+      if (next.has(answerId)) next.delete(answerId)
+      else next.add(answerId)
+      return next
+    })
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
       <section className="mb-6 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6 dark:border-indigo-900/60 dark:from-indigo-950/70 dark:to-slate-900 sm:p-8">
@@ -53,7 +73,7 @@ export default function Fundamentals() {
         </p>
       </section>
 
-      <section className="mb-6 grid gap-3 md:grid-cols-3" aria-label="Chọn nhóm lý thuyết">
+      <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5" aria-label="Chọn nhóm lý thuyết">
         {(Object.keys(trackInfo) as LearningTrack[]).map((item) => {
           const isActive = track === item
           const lessonCount = fundamentals.filter((lesson) => belongsToTrack(lesson.group, item)).length
@@ -115,14 +135,56 @@ export default function Fundamentals() {
                 {active.complexity && <div className="mt-5 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300">{active.complexity}</div>}
               </section>
             </div>
+
+            {active.questions?.length ? (
+              <section className="mt-7 rounded-2xl border border-cyan-200 bg-cyan-50/70 p-5 dark:border-cyan-800/70 dark:bg-slate-900/80">
+                <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-800 dark:text-cyan-300">Câu hỏi level Tech Lead</h3>
+                <ol className="mt-3 space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
+                  {active.questions.map((question, index) => {
+                    const answer = active.answers?.[index]
+                    const answerId = `${active.id}-${index}`
+                    const isExpanded = expandedAnswers.has(answerId)
+
+                    return (
+                      <li key={question} className="rounded-xl border border-cyan-200/80 bg-white/70 p-4 dark:border-slate-700 dark:bg-slate-950/55">
+                        <div className="flex gap-3">
+                          <span className="font-bold text-cyan-700 dark:text-cyan-300">{index + 1}.</span>
+                          <div className="min-w-0 flex-1">
+                            <p>{question}</p>
+                            {answer ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => toggleAnswer(answerId)}
+                                  aria-expanded={isExpanded}
+                                  className="mt-3 rounded-lg border border-cyan-300 px-3 py-1.5 text-xs font-bold text-cyan-800 transition hover:bg-cyan-100 dark:border-cyan-700 dark:text-cyan-300 dark:hover:bg-cyan-950/60"
+                                >
+                                  {isExpanded ? 'Đóng câu trả lời' : 'Xem câu trả lời'}
+                                </button>
+                                {isExpanded ? (
+                                  <div className="mt-3 border-l-2 border-emerald-500 pl-4 text-slate-700 dark:text-slate-200">
+                                    <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Câu trả lời mẫu</span>
+                                    {answer}
+                                  </div>
+                                ) : null}
+                              </>
+                            ) : null}
+                          </div>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ol>
+              </section>
+            ) : null}
           </div>
 
           <section className="border-t border-slate-200 bg-slate-950 p-5 dark:border-slate-700 sm:p-7">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Code sample bắt buộc</h3>
-              <span className="text-xs text-slate-500">{active.group === 'SwiftUI' ? 'Swift' : 'JavaScript'}</span>
+              <span className="text-xs text-slate-500">JavaScript / TypeScript</span>
             </div>
-            <SyntaxCode code={active.code} language={active.group === 'SwiftUI' ? 'swift' : 'javascript'} className="!p-0" />
+            <SyntaxCode code={active.code} language="javascript" className="!p-0" />
           </section>
         </article>
       </div>
