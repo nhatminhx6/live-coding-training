@@ -1,0 +1,1 @@
+function n(o,l){console.log("MERA mergeTwoSorted ",o,l);let r=o.length>l.length?o.length:l.length,t=[];for(let e=0;e<r;e++)console.log("MERA loop ==> ",e),o[e]&&t.push(o[e]),l[e]&&t.push(l[e]);return console.log("MERA mergeTwoSorted  finalArr  ==>  ",t),t}export{n as default};

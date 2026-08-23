@@ -1,0 +1,1 @@
+function r(...t){let e=[0,1,0,3,12];console.log("Running moveZeroes with args:",e);let o=0;for(let n=0;n<e.length-1;n++)if(e[n]===0){let l=e[n];e[n]=e[e.length-1-o],e[o]=l,o++}return console.log("Running moveZeroes with args:",e),null}export{r as default};

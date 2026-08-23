@@ -26,6 +26,15 @@ export const easyQuestions = [
         examples: [`"hello" → "olleh"`],
         functionSignature: "function reverseString(s) {}",
         starterCode: `function reverseString(s){
+  let result = '';
+
+  for(let i = s.length - 1; i >= 0; i--){
+    result += s[i];
+  }
+
+  return result;
+}`,
+        arrayFunctionCode: `function reverseString(s){
   return s.split('').reverse().join('');
 }`,
         testCases: [{ input: ["hello"], output: "olleh" }]
@@ -38,6 +47,21 @@ export const easyQuestions = [
         examples: [`"anagram","nagaram" → true`],
         functionSignature: "function isAnagram(s,t) {}",
         starterCode: `function isAnagram(s,t){
+  if(s.length !== t.length) return false;
+
+  const count = {};
+  for(const char of s){
+    count[char] = (count[char] || 0) + 1;
+  }
+
+  for(const char of t){
+    if(!count[char]) return false;
+    count[char]--;
+  }
+
+  return true;
+}`,
+        arrayFunctionCode: `function isAnagram(s,t){
   return s.split('').sort().join('') === t.split('').sort().join('');
 }`,
         testCases: [{ input: ["anagram","nagaram"], output: true }]
@@ -50,6 +74,18 @@ export const easyQuestions = [
         examples: [`"racecar" → true`],
         functionSignature: "function isPalindrome(s) {}",
         starterCode: `function isPalindrome(s){
+  let left = 0;
+  let right = s.length - 1;
+
+  while(left < right){
+    if(s[left] !== s[right]) return false;
+    left++;
+    right--;
+  }
+
+  return true;
+}`,
+        arrayFunctionCode: `function isPalindrome(s){
   return s === s.split('').reverse().join('');
 }`,
         testCases: [{ input: ["racecar"], output: true }]
@@ -81,6 +117,15 @@ export const easyQuestions = [
         examples: ["[1,5,3] → 5"],
         functionSignature: "function findMax(nums) {}",
         starterCode: `function findMax(nums){
+  let max = nums[0];
+
+  for(let i = 1; i < nums.length; i++){
+    if(nums[i] > max) max = nums[i];
+  }
+
+  return max;
+}`,
+        arrayFunctionCode: `function findMax(nums){
   return Math.max(...nums);
 }`,
         testCases: [{ input: [[1,5,3]], output: 5 }]
@@ -93,6 +138,16 @@ export const easyQuestions = [
         examples: ["[1,2,3,1] → true"],
         functionSignature: "function containsDuplicate(nums) {}",
         starterCode: `function containsDuplicate(nums){
+  const seen = new Set();
+
+  for(const number of nums){
+    if(seen.has(number)) return true;
+    seen.add(number);
+  }
+
+  return false;
+}`,
+        arrayFunctionCode: `function containsDuplicate(nums){
   return new Set(nums).size !== nums.length;
 }`,
         testCases: [{ input: [[1,2,3,1]], output: true }]

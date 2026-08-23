@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { SearchBar } from '../components/SearchBar'
 import { SyntaxCode } from '../components/SyntaxCode'
 import { questions } from '../data/questions'
+import { alternativeSolutions } from '../data/questions/alternativeSolutions'
 import type { Difficulty, Question, TestResult } from '../types'
 
 type DifficultyFilter = Difficulty | 'all'
@@ -153,6 +154,7 @@ export default function QuestionList() {
           const isSolutionOpen = openSolutions[question.slug] ?? false
           const questionResults = results[question.slug]
           const passed = questionResults?.filter((result) => result.passed).length ?? 0
+          const secondSolution = question.arrayFunctionCode ?? alternativeSolutions[question.slug]
           return (
             <li key={question.slug} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600">
               <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -194,10 +196,19 @@ export default function QuestionList() {
                     {isSolutionOpen && (
                       <div id={`solution-${question.slug}`} className="border-t border-indigo-100 dark:border-indigo-900">
                         <div className="flex items-center justify-between bg-slate-900 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-                          <span>Solution</span>
+                          <span>Cách 1 · Giải thuật</span>
                           <span>JavaScript</span>
                         </div>
                         <SyntaxCode code={question.starterCode.trim()} />
+                        {secondSolution && (
+                          <>
+                            <div className="flex items-center justify-between border-t border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                              <span>Cách 2 · {question.arrayFunctionCode ? 'Array/String functions' : 'Giải pháp khác'}</span>
+                              <span>Tham khảo</span>
+                            </div>
+                            <SyntaxCode code={secondSolution.trim()} />
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

@@ -24,9 +24,20 @@ export const hardQuestions = [
         examples: ["[1,3] & [2] → 2"],
         functionSignature: "function findMedianSortedArrays(a,b) {}",
         starterCode: `function findMedianSortedArrays(a,b){
-  const m=[...a,...b].sort((x,y)=>x-y);
-  const n=m.length;
-  return n%2? m[Math.floor(n/2)] : (m[n/2-1]+m[n/2])/2;
+  if(a.length>b.length) return findMedianSortedArrays(b,a);
+  const total=a.length+b.length, half=Math.floor((total+1)/2);
+  let left=0,right=a.length;
+  while(left<=right){
+    const i=Math.floor((left+right)/2),j=half-i;
+    const aL=i===0?-Infinity:a[i-1],aR=i===a.length?Infinity:a[i];
+    const bL=j===0?-Infinity:b[j-1],bR=j===b.length?Infinity:b[j];
+    if(aL<=bR&&bL<=aR){
+      if(total%2) return Math.max(aL,bL);
+      return (Math.max(aL,bL)+Math.min(aR,bR))/2;
+    }
+    if(aL>bR) right=i-1;
+    else left=i+1;
+  }
 }`,
         testCases: [{ input: [[1,3],[2]], output: 2 }]
     },
@@ -38,8 +49,20 @@ export const hardQuestions = [
         examples: ["[[1,4,5],[1,3,4],[2,6]] → [1,1,2,3,4,4,5,6]"],
         functionSignature: "function mergeKArrays(arrs) {}",
         starterCode: `function mergeKArrays(a){
-  const res=[]; for(const arr of a) for(const x of arr) res.push(x);
-  res.sort((x,y)=>x-y); return res;
+  function merge(left,right){
+    const result=[]; let i=0,j=0;
+    while(i<left.length||j<right.length){
+      if(j===right.length||(i<left.length&&left[i]<=right[j])) result.push(left[i++]);
+      else result.push(right[j++]);
+    }
+    return result;
+  }
+  while(a.length>1){
+    const next=[];
+    for(let i=0;i<a.length;i+=2) next.push(i+1<a.length?merge(a[i],a[i+1]):a[i]);
+    a=next;
+  }
+  return a[0]||[];
 }`,
         testCases: [{ input: [[[1,4,5],[1,3,4],[2,6]]], output: [1,1,2,3,4,4,5,6] }]
     },

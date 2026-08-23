@@ -13,7 +13,10 @@ export interface Question {
   description: string
   examples: string[]
   functionSignature: string
+  /** Cách giải chính: ưu tiên trình bày giải thuật để luyện tư duy. */
   starterCode: string
+  /** Cách 2: ưu tiên Array/String functions, nếu không thì dùng một giải thuật khác. */
+  arrayFunctionCode?: string
   testCases: TestCase[]
 }
 

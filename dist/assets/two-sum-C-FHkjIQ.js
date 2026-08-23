@@ -1,0 +1,1 @@
+function u(...o){let t=o[0],r=o[1],n=[];console.log("Running twoSum with args:",t," --  ",r);for(let l=0;l<t.length;l++)for(let e=l+1;e<t.length;e++)if(t[l]+t[e]===r)return n=[l,e],console.log("sumArr  ======>  ",n,"from: ",t[l],t[e]),n;return null}export{u as default};

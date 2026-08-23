@@ -1,0 +1,1 @@
+function s(...r){const i=r[0],l=i.length;let t=0;console.log("Running isPalindrome with args :=== >  ",i,l);for(let n=0;n<l-1;n++)for(let o=l-1-n;o>=0;o--)i[n]===i[o]&&n<o&&(t++,console.log("isPalindrome  ",n," --",o));const e=Math.floor(l/2);return console.log("Running isPalindrome with args :=== >  ",e),e===t}export{s as default};

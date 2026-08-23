@@ -54,7 +54,9 @@ export const mediumQuestions = [
         starterCode: `function groupAnagrams(strs){
   const m=new Map();
   for(const s of strs){
-    const k=s.split('').sort().join('');
+    const count=Array(26).fill(0);
+    for(const char of s) count[char.charCodeAt(0)-97]++;
+    const k=count.join('#');
     if(!m.has(k)) m.set(k,[]);
     m.get(k).push(s);
   }
@@ -72,7 +74,16 @@ export const mediumQuestions = [
         starterCode: `function topKFrequent(nums,k){
   const m=new Map();
   for(const x of nums) m.set(x,(m.get(x)||0)+1);
-  return Array.from(m.entries()).sort((a,b)=>b[1]-a[1]).slice(0,k).map(x=>x[0]);
+  const buckets=Array.from({length:nums.length+1},()=>[]);
+  for(const [number,count] of m) buckets[count].push(number);
+  const result=[];
+  for(let count=buckets.length-1;count>=0 && result.length<k;count--){
+    for(const number of buckets[count]){
+      result.push(number);
+      if(result.length===k) break;
+    }
+  }
+  return result;
 }`,
         testCases: [{ input: [[1,1,1,2,2,3],2], output: [1,2] }]
     },
@@ -266,8 +277,22 @@ export const mediumQuestions = [
         examples: ["[3,2,1,5,6,4], k=2 → 5"],
         functionSignature: "function findKthLargest(nums,k) {}",
         starterCode: `function findKthLargest(nums,k){
-  nums.sort((a,b)=>b-a);
-  return nums[k-1];
+  const target=nums.length-k;
+  let left=0,right=nums.length-1;
+  while(left<=right){
+    const pivot=nums[right];
+    let position=left;
+    for(let i=left;i<right;i++){
+      if(nums[i]<=pivot){
+        [nums[i],nums[position]]=[nums[position],nums[i]];
+        position++;
+      }
+    }
+    [nums[position],nums[right]]=[nums[right],nums[position]];
+    if(position===target) return nums[position];
+    if(position<target) left=position+1;
+    else right=position-1;
+  }
 }`,
         testCases: [{ input: [[3,2,1,5,6,4],2], output: 5 }]
     },
