@@ -3,6 +3,7 @@ import { SearchBar } from '../components/SearchBar'
 import { SyntaxCode } from '../components/SyntaxCode'
 import { questions } from '../data/questions'
 import { alternativeSolutions } from '../data/questions/alternativeSolutions'
+import { questionGuides } from '../data/questions/guides'
 import type { Difficulty, Question, TestResult } from '../types'
 
 type QuestionFilter = Difficulty | 'all' | 'classic'
@@ -71,6 +72,10 @@ function formatValue(value: unknown) {
   if (typeof value === 'string') return `"${value}"`
   const serialized = JSON.stringify(value)
   return serialized === undefined ? String(value) : serialized
+}
+
+function getParameterNames(signature: string): string[] {
+  return signature.match(/\(([^)]*)\)/)?.[1].split(',').map((name) => name.trim()).filter(Boolean) ?? []
 }
 
 export default function QuestionList() {
@@ -185,6 +190,9 @@ export default function QuestionList() {
           const questionResults = results[question.slug]
           const passed = questionResults?.filter((result) => result.passed).length ?? 0
           const secondSolution = question.arrayFunctionCode ?? alternativeSolutions[question.slug]
+          const guide = questionGuides[question.slug]
+          const example = question.testCases[0]
+          const parameterNames = getParameterNames(question.functionSignature)
           return (
             <li key={question.slug} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600">
               <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -209,8 +217,11 @@ export default function QuestionList() {
 
               {isOpen && (
                 <div className="border-t border-slate-100 bg-slate-50/70 p-5 dark:border-slate-700 dark:bg-slate-950/50 sm:pl-[5.25rem]">
-                  <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-300">{question.description}</p>
-                  {question.examples.length > 0 && <div className="mt-4"><h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ví dụ</h2><ul className="space-y-1 font-mono text-sm text-slate-700 dark:text-slate-300">{question.examples.map((example) => <li key={example} className="rounded-lg bg-white px-3 py-2 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">{example}</li>)}</ul></div>}
+                  <div>
+                    <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Problem</h2>
+                    <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-300">{guide?.problem ?? question.description}</p>
+                  </div>
+                  {example && <div className="mt-4"><h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Example</h2><div className="space-y-2 rounded-xl bg-white p-4 text-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"><p><strong className="text-slate-900 dark:text-slate-100">Input:</strong> <code className="text-indigo-600 dark:text-indigo-300">{example.input.map((value, inputIndex) => `${parameterNames[inputIndex] || `arg${inputIndex + 1}`} = ${formatValue(value)}`).join(', ')}</code></p><p><strong className="text-slate-900 dark:text-slate-100">Output:</strong> <code className="text-emerald-600 dark:text-emerald-300">{formatValue(example.output)}</code></p><p className="leading-6 text-slate-600 dark:text-slate-300"><strong className="text-slate-900 dark:text-slate-100">Explanation:</strong> {example.explanation ?? guide?.explanation ?? 'The output follows directly from the conditions in the problem.'}</p></div></div>}
                   <div className="mt-4"><h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Function signature</h2><SyntaxCode code={question.functionSignature} className="rounded-xl" /></div>
                   <div className="mt-4 overflow-hidden rounded-xl border border-indigo-200 bg-white dark:border-indigo-900 dark:bg-slate-900">
                     <button

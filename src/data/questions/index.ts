@@ -3,6 +3,7 @@ import { mediumQuestions } from './medium'
 import { hardQuestions } from './hard'
 import type { Question } from '../../types'
 import { alternativeSolutions } from './alternativeSolutions'
+import { questionGuides } from './guides'
 
 export const questions: Question[] = [
     ...easyQuestions,
@@ -17,5 +18,8 @@ for (const question of questions) {
     }
     if (!question.arrayFunctionCode?.trim() && !alternativeSolutions[question.slug]?.trim()) {
         throw new Error(`Practice "${question.slug}" phải có cách giải thứ 2`)
+    }
+    if (!questionGuides[question.slug]?.problem.trim() || !questionGuides[question.slug]?.explanation.trim()) {
+        throw new Error(`Practice "${question.slug}" phải có đề bài và giải thích ví dụ dễ hiểu`)
     }
 }
