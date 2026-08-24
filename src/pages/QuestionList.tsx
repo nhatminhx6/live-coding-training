@@ -5,11 +5,39 @@ import { questions } from '../data/questions'
 import { alternativeSolutions } from '../data/questions/alternativeSolutions'
 import type { Difficulty, Question, TestResult } from '../types'
 
-type DifficultyFilter = Difficulty | 'all'
+type QuestionFilter = Difficulty | 'all' | 'classic'
 type PracticeModule = { default: (...args: unknown[]) => unknown | Promise<unknown> }
 
 const practiceModules = import.meta.glob<PracticeModule>('../practice/*.ts')
-const filters: DifficultyFilter[] = ['all', 'easy', 'medium', 'hard']
+const filters: QuestionFilter[] = ['all', 'classic', 'easy', 'medium', 'hard']
+
+// Các pattern kinh điển thường xuất hiện trong phỏng vấn kỹ thuật.
+const classicQuestionSlugs = new Set([
+  'two-sum',
+  'valid-anagram',
+  'palindrome',
+  'binary-search',
+  'valid-parentheses',
+  'merge-two-sorted-arrays',
+  'best-time-buy-sell',
+  'climbing-stairs',
+  '3sum',
+  'longest-substring',
+  'group-anagrams',
+  'product-except-self',
+  'spiral-matrix',
+  'word-break',
+  'coin-change',
+  'container-most-water',
+  'course-schedule',
+  'number-of-islands',
+  'trapping-rain-water',
+  'median-two-arrays',
+  'n-queens',
+  'edit-distance',
+  'sliding-window-maximum',
+  'largest-rectangle-histogram',
+])
 
 const difficultyStyles: Record<Difficulty, string> = {
   easy: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950 dark:text-emerald-300',
@@ -46,7 +74,7 @@ function formatValue(value: unknown) {
 }
 
 export default function QuestionList() {
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
+  const [activeFilter, setActiveFilter] = useState<QuestionFilter>('all')
   const [query, setQuery] = useState('')
   const [expanded, setExpanded] = useState<string | null>(null)
   const [openSolutions, setOpenSolutions] = useState<Record<string, boolean>>({})
@@ -55,6 +83,7 @@ export default function QuestionList() {
 
   const counts = useMemo(() => ({
     all: questions.length,
+    classic: questions.filter((q) => classicQuestionSlugs.has(q.slug)).length,
     easy: questions.filter((q) => q.difficulty === 'easy').length,
     medium: questions.filter((q) => q.difficulty === 'medium').length,
     hard: questions.filter((q) => q.difficulty === 'hard').length,
@@ -63,11 +92,12 @@ export default function QuestionList() {
   const filtered = useMemo(() => {
     const keyword = query.trim().toLocaleLowerCase()
     return questions.filter((question) => {
-      const matchesDifficulty = difficulty === 'all' || question.difficulty === difficulty
+      const matchesFilter = activeFilter === 'all'
+        || (activeFilter === 'classic' ? classicQuestionSlugs.has(question.slug) : question.difficulty === activeFilter)
       const haystack = `${question.title} ${question.slug} ${question.description}`.toLocaleLowerCase()
-      return matchesDifficulty && (!keyword || haystack.includes(keyword))
+      return matchesFilter && (!keyword || haystack.includes(keyword))
     })
-  }, [difficulty, query])
+  }, [activeFilter, query])
 
   const runPractice = async (question: Question) => {
     setRunning(question.slug)
@@ -131,13 +161,13 @@ export default function QuestionList() {
             <button
               key={filter}
               type="button"
-              onClick={() => setDifficulty(filter)}
-              aria-pressed={difficulty === filter}
+              onClick={() => setActiveFilter(filter)}
+              aria-pressed={activeFilter === filter}
               className={`rounded-xl px-3.5 py-2 text-sm font-semibold transition ${
-                difficulty === filter ? 'bg-slate-900 text-white shadow-sm dark:bg-indigo-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                activeFilter === filter ? 'bg-slate-900 text-white shadow-sm dark:bg-indigo-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
-              {filter === 'all' ? 'Tất cả' : filter} <span className="ml-1 opacity-60">{counts[filter]}</span>
+              {filter === 'all' ? 'Tất cả' : filter === 'classic' ? 'Kinh điển' : filter} <span className="ml-1 opacity-60">{counts[filter]}</span>
             </button>
           ))}
         </div>
