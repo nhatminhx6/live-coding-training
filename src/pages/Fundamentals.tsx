@@ -120,14 +120,14 @@ export default function Fundamentals() {
             <h2 className="mt-4 text-2xl font-bold text-slate-950 dark:text-white">{active.title}</h2>
             <p className="mt-2 text-base leading-7 text-slate-600 dark:text-slate-300">{active.summary}</p>
 
-            <div className="mt-7 grid gap-7 md:grid-cols-2">
+            <div className="mt-7">
               <section>
-                <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Cốt lõi cần nhớ</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">{active.plainTheory ? 'Giải thích dễ hiểu' : 'Cốt lõi cần nhớ'}</h3>
                 <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
-                  {active.theory.map((point) => <li key={point} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />{point}</li>)}
+                  {(active.plainTheory ?? active.theory).map((point) => <li key={point} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />{point}</li>)}
                 </ul>
               </section>
-              <section>
+              <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
                 <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Khi nào dùng</h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {active.useCases.map((useCase) => <span key={useCase} className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">{useCase}</span>)}

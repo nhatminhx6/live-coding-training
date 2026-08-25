@@ -4,6 +4,7 @@ export interface Fundamental {
   group: 'JavaScript' | 'Data structures' | 'Algorithms' | 'React' | 'React Native' | 'Performance' | 'Architecture' | 'AI Skills'
   summary: string
   theory: string[]
+  plainTheory?: string[]
   useCases: string[]
   complexity?: string
   questions?: string[]
@@ -23,16 +24,17 @@ export const fundamentals: Fundamental[] = [
       'const chỉ ngăn gán lại binding, không làm object immutable. Ưu tiên const, dùng let khi cần gán lại và tránh var trong code mới.',
     ],
     useCases: ['Khai báo biến an toàn', 'Loop scope', 'Tránh accidental reassignment', 'Đọc code legacy'],
-    code: `const user = { name: 'An' }
-user.name = 'Bình' // Hợp lệ: object vẫn mutable.
+    code: `const user = {
+  name: 'An'
+};
+user.name = 'Bình'; // Hợp lệ: object vẫn mutable.
 // user = {}       // TypeError: không thể gán lại binding.
 
 if (true) {
-  let message = 'block scoped'
-  var legacy = 'function scoped'
+  let message = 'block scoped';
+  var legacy = 'function scoped';
 }
-
-console.log(legacy) // 'function scoped'
+console.log(legacy); // 'function scoped'
 // console.log(message) // ReferenceError`,
   },
   {
@@ -46,17 +48,18 @@ console.log(legacy) // 'function scoped'
       'let, const và class đã có binding nhưng chưa initialize; truy cập trong temporal dead zone gây ReferenceError.',
     ],
     useCases: ['Dự đoán output', 'Debug ReferenceError', 'Phân biệt function declaration và expression'],
-    code: `greet() // 'hello'
-function greet() { console.log('hello') }
-
-console.log(score) // undefined
-var score = 10
+    code: `greet(); // 'hello'
+function greet() {
+  console.log('hello');
+}
+console.log(score); // undefined
+var score = 10;
 
 // console.log(name) // ReferenceError: TDZ
-let name = 'An'
+let name = 'An';
 
 // run() // TypeError: run là undefined
-var run = function () {}`,
+var run = function () {};`,
   },
   {
     id: 'js-scope-closure',
@@ -70,17 +73,20 @@ var run = function () {}`,
     ],
     useCases: ['Private state', 'Factory function', 'Callback', 'Memoization'],
     code: `function createCounter(initial = 0) {
-  let count = initial
-
+  let count = initial;
   return {
-    increment() { return ++count },
-    current() { return count },
-  }
+    increment() {
+      count++;
+      return count;
+    },
+    current() {
+      return count;
+    }
+  };
 }
-
-const counter = createCounter(5)
-counter.increment() // 6
-counter.current()   // 6`,
+const counter = createCounter(5);
+counter.increment(); // 6
+counter.current(); // 6`,
   },
   {
     id: 'js-this-functions',
@@ -95,16 +101,17 @@ counter.current()   // 6`,
     useCases: ['Object method', 'Event callback', 'Class method', 'call/apply/bind'],
     code: `const account = {
   balance: 100,
-  show() { return this.balance },
-  later() {
-    return () => this.balance
+  show() {
+    return this.balance;
   },
-}
+  later() {
+    return () => this.balance;
+  }
+};
+account.show(); // 100
 
-account.show() // 100
-
-const safeShow = account.show.bind(account)
-safeShow() // 100`,
+const safeShow = account.show.bind(account);
+safeShow(); // 100`,
   },
   {
     id: 'js-equality-coercion',
@@ -117,15 +124,19 @@ safeShow() // 100`,
       'Object.is xử lý NaN bằng nhau và phân biệt +0 với -0; Number.isNaN kiểm tra NaN mà không ép kiểu.',
     ],
     useCases: ['So sánh dữ liệu', 'Validate input', 'Debug coercion', 'Kiểm tra NaN'],
-    code: `0 == false       // true: có coercion
-0 === false      // false: khác type
-NaN === NaN      // false
-Object.is(NaN, NaN) // true
+    code: `0 == false; // true: có coercion
+0 === false; // false: khác type
+NaN === NaN; // false
+Object.is(NaN, NaN); // true
 
-const first = { id: 1 }
-const second = { id: 1 }
-first === second  // false: khác reference
-first === first   // true`,
+const first = {
+  id: 1
+};
+const second = {
+  id: 1
+};
+first === second; // false: khác reference
+first === first; // true`,
   },
   {
     id: 'js-array-methods',
@@ -139,17 +150,17 @@ first === first   // true`,
     ],
     useCases: ['Data transformation', 'React rendering', 'Tổng hợp dữ liệu', 'Immutable update'],
     complexity: 'Phần lớn method duyệt mảng có thời gian O(n)',
-    code: `const products = [
-  { name: 'Book', price: 20, active: true },
-  { name: 'Pen', price: 5, active: false },
-]
-
-const total = products
-  .filter(product => product.active)
-  .map(product => product.price)
-  .reduce((sum, price) => sum + price, 0)
-
-console.log(total) // 20`,
+    code: `const products = [{
+  name: 'Book',
+  price: 20,
+  active: true
+}, {
+  name: 'Pen',
+  price: 5,
+  active: false
+}];
+const total = products.filter(product => product.active).map(product => product.price).reduce((sum, price) => sum + price, 0);
+console.log(total); // 20`,
   },
   {
     id: 'map-set',
@@ -164,16 +175,13 @@ console.log(total) // 20`,
     useCases: ['Two Sum', 'Đếm tần suất', 'Kiểm tra phần tử trùng', 'Nhóm dữ liệu theo khóa'],
     complexity: 'Thời gian O(n) · Bộ nhớ O(n)',
     code: `function countFrequency(values) {
-  const frequency = new Map()
-
+  const frequency = new Map();
   for (const value of values) {
-    frequency.set(value, (frequency.get(value) ?? 0) + 1)
+    frequency.set(value, (frequency.get(value) ?? 0) + 1);
   }
-
-  return frequency
+  return frequency;
 }
-
-countFrequency(['a', 'b', 'a']) // Map { a: 2, b: 1 }`,
+countFrequency(['a', 'b', 'a']); // Map { a: 2, b: 1 }`,
   },
   {
     id: 'stack-queue',
@@ -188,18 +196,24 @@ countFrequency(['a', 'b', 'a']) // Map { a: 2, b: 1 }`,
     useCases: ['Valid Parentheses', 'Undo/redo', 'BFS', 'Xử lý tác vụ theo hàng đợi'],
     complexity: 'Push/pop hoặc enqueue/dequeue: O(1)',
     code: `class Queue {
-  items = []
-  head = 0
-
-  enqueue(value) { this.items.push(value) }
-  dequeue() { return this.items[this.head++] }
-  get size() { return this.items.length - this.head }
+  items = [];
+  head = 0;
+  enqueue(value) {
+    this.items.push(value);
+  }
+  dequeue() {
+    const item = this.items[this.head];
+    this.head++;
+    return item;
+  }
+  get size() {
+    return this.items.length - this.head;
+  }
 }
-
-const queue = new Queue()
-queue.enqueue('first')
-queue.enqueue('second')
-queue.dequeue() // 'first'`,
+const queue = new Queue();
+queue.enqueue('first');
+queue.enqueue('second');
+queue.dequeue(); // 'first'`,
   },
   {
     id: 'two-pointers',
@@ -214,17 +228,20 @@ queue.dequeue() // 'first'`,
     useCases: ['Palindrome', 'Two Sum trên mảng đã sort', 'Move Zeroes', 'Container With Most Water'],
     complexity: 'Thường O(n) thời gian · O(1) bộ nhớ',
     code: `function hasPairWithSum(sortedNumbers, target) {
-  let left = 0
-  let right = sortedNumbers.length - 1
-
+  let left = 0;
+  let right = sortedNumbers.length - 1;
   while (left < right) {
-    const sum = sortedNumbers[left] + sortedNumbers[right]
-    if (sum === target) return true
-    if (sum < target) left++
-    else right--
+    const sum = sortedNumbers[left] + sortedNumbers[right];
+    if (sum === target) {
+      return true;
+    }
+    if (sum < target) {
+      left++;
+    } else {
+      right--;
+    }
   }
-
-  return false
+  return false;
 }`,
   },
   {
@@ -240,17 +257,16 @@ queue.dequeue() // 'first'`,
     useCases: ['Tổng lớn nhất của k phần tử', 'Longest Substring', 'Minimum Window Substring'],
     complexity: 'O(n) vì mỗi con trỏ đi qua mảng tối đa một lần',
     code: `function maxSumOfK(numbers, k) {
-  if (k > numbers.length) return null
-
-  let sum = numbers.slice(0, k).reduce((a, b) => a + b, 0)
-  let best = sum
-
-  for (let right = k; right < numbers.length; right++) {
-    sum += numbers[right] - numbers[right - k]
-    best = Math.max(best, sum)
+  if (k > numbers.length) {
+    return null;
   }
-
-  return best
+  let sum = numbers.slice(0, k).reduce((a, b) => a + b, 0);
+  let best = sum;
+  for (let right = k; right < numbers.length; right++) {
+    sum += numbers[right] - numbers[right - k];
+    best = Math.max(best, sum);
+  }
+  return best;
 }`,
   },
   {
@@ -266,17 +282,20 @@ queue.dequeue() // 'first'`,
     useCases: ['Tìm trong mảng đã sort', 'Lower bound', 'Binary search on answer'],
     complexity: 'O(log n) thời gian · O(1) bộ nhớ',
     code: `function binarySearch(numbers, target) {
-  let left = 0
-  let right = numbers.length - 1
-
+  let left = 0;
+  let right = numbers.length - 1;
   while (left <= right) {
-    const middle = left + Math.floor((right - left) / 2)
-    if (numbers[middle] === target) return middle
-    if (numbers[middle] < target) left = middle + 1
-    else right = middle - 1
+    const middle = left + Math.floor((right - left) / 2);
+    if (numbers[middle] === target) {
+      return middle;
+    }
+    if (numbers[middle] < target) {
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
   }
-
-  return -1
+  return -1;
 }`,
   },
   {
@@ -292,16 +311,18 @@ queue.dequeue() // 'first'`,
     useCases: ['Duyệt tree/graph', 'Number of Islands', 'Backtracking', 'Sinh tổ hợp'],
     complexity: 'Tùy số trạng thái và số cạnh được duyệt',
     code: `function depthFirstSearch(graph, start) {
-  const visited = new Set()
-
+  const visited = new Set();
   function visit(node) {
-    if (visited.has(node)) return
-    visited.add(node)
-    for (const neighbor of graph[node] ?? []) visit(neighbor)
+    if (visited.has(node)) {
+      return;
+    }
+    visited.add(node);
+    for (const neighbor of graph[node] ?? []) {
+      visit(neighbor);
+    }
   }
-
-  visit(start)
-  return [...visited]
+  visit(start);
+  return [...visited];
 }`,
   },
   {
@@ -318,15 +339,18 @@ queue.dequeue() // 'first'`,
     complexity: 'Copy mảng/object thường tốn O(n)',
     code: `const user = {
   name: 'An',
-  settings: { theme: 'light' },
-}
-
+  settings: {
+    theme: 'light'
+  }
+};
 const updatedUser = {
   ...user,
-  settings: { ...user.settings, theme: 'dark' },
-}
-
-console.log(user.settings.theme) // 'light'`,
+  settings: {
+    ...user.settings,
+    theme: 'dark'
+  }
+};
+console.log(user.settings.theme); // 'light'`,
   },
   {
     id: 'async-event-loop',
@@ -339,12 +363,10 @@ console.log(user.settings.theme) // 'light'`,
       'await tạm dừng riêng async function; nó không block toàn bộ JavaScript thread.',
     ],
     useCases: ['API calls', 'Chạy nhiều tác vụ song song', 'Xử lý lỗi async', 'Dự đoán thứ tự log'],
-    code: `console.log('A')
-
-setTimeout(() => console.log('B'), 0)
-Promise.resolve().then(() => console.log('C'))
-
-console.log('D')
+    code: `console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
 
 // Thứ tự: A, D, C, B`,
   },
@@ -353,10 +375,22 @@ console.log('D')
     title: 'Render, Reconciliation & State Snapshot',
     group: 'React',
     summary: 'Hiểu render là phép tính snapshot, commit mới thay đổi UI và identity quyết định state được giữ hay reset.',
+    plainTheory: [
+      'Render nghĩa là React gọi component để tính xem giao diện nên trông như thế nào. Ở bước này React mới tạo bản mô tả giao diện, chưa thay đổi thứ người dùng đang nhìn thấy.',
+      'State là một “ảnh chụp” tại thời điểm render. Trong một lần bấm nút, biến count vẫn giữ giá trị cũ dù đã gọi setCount; setCount chỉ yêu cầu React render lại với giá trị mới.',
+      'Ví dụ: count đang là 0, gọi setCount(count + 1) ba lần vẫn là ba yêu cầu đặt count thành 1. Muốn tăng ba lần phải dùng setCount(value => value + 1), vì mỗi hàm nhận kết quả mới nhất của lần trước.',
+      'Commit là lúc React đem kết quả render so với giao diện cũ và chỉ cập nhật phần thực sự thay đổi. Component có thể render lại nhưng native view hoặc DOM không nhất thiết bị sửa.',
+      'React nhận diện một component bằng loại component, vị trí và key. Nếu identity không đổi thì state được giữ; nếu key/type đổi thì React xem đó là component mới và reset state.',
+      'Không gọi API, sửa object dùng chung hoặc ghi storage ngay trong lúc render. React có thể gọi render nhiều lần; side effect đặt ở event handler hoặc Effect để không bị chạy lặp ngoài ý muốn.',
+    ],
     theory: [
-      'Mỗi render nhận một snapshot state bất biến; event handler giữ snapshot của render đã tạo ra nó.',
-      'Render phải pure. React có thể render lại, tạm dừng hoặc bỏ một render trước commit.',
-      'Type, position và key tạo identity. Key không ổn định gây reset state và reconciliation sai.',
+      'Update state chỉ enqueue một render mới; biến state trong handler hiện tại không đổi vì mỗi render giữ một snapshot riêng. Functional updater nhận state mới nhất trong queue nên là lựa chọn đúng khi update dựa trên giá trị trước.',
+      'React đi qua Trigger → Render → Commit. Render gọi component để tính element tree; commit mới áp mutation tối thiểu lên host UI. Một render có thể không tạo ra bất kỳ thay đổi host nào.',
+      'Render phase phải pure vì React có quyền gọi lại, tạm dừng, ưu tiên lại hoặc bỏ kết quả. Mutate object dùng chung, gọi API hay ghi storage trong render sẽ tạo bug không xác định dưới Strict/Concurrent rendering.',
+      'Reconciliation so sánh type và vị trí trong tree. Cùng type ở cùng vị trí giữ state; đổi type hoặc key làm subtree unmount/mount và reset toàn bộ state bên dưới.',
+      'Key chỉ cần unique giữa siblings nhưng phải ổn định qua insert/reorder. Index hoặc UUID tạo trong render làm identity trôi, khiến input giữ sai value, animation lệch và memoization mất tác dụng.',
+      'Parent render mặc định kéo theo việc React gọi lại descendants; điều đó không đồng nghĩa host view đều update. Chỉ tối ưu bằng memoization sau khi profiler chứng minh render cost đáng kể.',
+      'Strict Mode development cố ý gọi component và một số updater thêm lần nữa để phát hiện impurity; code đúng phải cho cùng output và không phụ thuộc số lần render.',
     ],
     useCases: ['Debug stale state', 'Dynamic form', 'List reorder', 'Concurrent rendering'],
     questions: [
@@ -370,15 +404,13 @@ console.log('D')
       'Render phase gọi component để tính tree mới, phải pure và có thể bị chạy lại hoặc hủy. Commit phase áp thay đổi vào host UI; side effect chạy trong event handler hoặc Effect sau commit, riêng useLayoutEffect chạy đồng bộ sau mutation nhưng trước paint.',
     ],
     code: `function Counter() {
-  const [count, setCount] = React.useState(0)
-
+  const [count, setCount] = React.useState(0);
   function increaseThreeTimes() {
-    setCount(value => value + 1)
-    setCount(value => value + 1)
-    setCount(value => value + 1)
+    setCount(value => value + 1);
+    setCount(value => value + 1);
+    setCount(value => value + 1);
   }
-
-  return <Button title={String(count)} onPress={increaseThreeTimes} />
+  return <Button title={String(count)} onPress={increaseThreeTimes} />;
 }`,
   },
   {
@@ -386,10 +418,22 @@ console.log('D')
     title: 'State Ownership & Architecture',
     group: 'React',
     summary: 'Phân loại local, server, URL/navigation và global state trước khi chọn công cụ quản lý.',
+    plainTheory: [
+      'Đầu tiên phải hỏi dữ liệu này thuộc về ai. Text đang nhập chỉ thuộc form; modal đang mở chỉ thuộc screen; session thuộc toàn app; danh sách sản phẩm đến từ server. Không phải state nào cũng đưa vào global store.',
+      'Local state nên đặt ở component gần nhất cần thay đổi nó. Chỉ đưa state lên cha khi nhiều component con phải dùng chung một giá trị; đưa quá cao sẽ làm nhiều vùng render lại và khó lần ra nơi thay đổi dữ liệu.',
+      'Server state khác client state: nó có thể cũ, cần cache, retry, refetch và xử lý nhiều request trùng. React Query hoặc một data layer tương tự quản lý việc này tốt hơn việc tự nhét response vào Redux.',
+      'Không lưu dữ liệu có thể tính được. Ví dụ đã có products và searchText thì filteredProducts nên tính từ hai giá trị đó; lưu thêm filteredProducts tạo hai nguồn dữ liệu dễ lệch nhau.',
+      'Context chỉ giúp truyền dữ liệu qua nhiều tầng, không tự làm app nhanh hơn. Khi value của Provider đổi, các component đang đọc Context có thể render lại; vì vậy không nên tạo một Context chứa mọi thứ trong app.',
+      'Ở app lớn, chia state theo feature và quy định rõ feature nào được đọc hoặc thay đổi dữ liệu nào. Screen gọi action công khai thay vì sửa trực tiếp state nội bộ của feature khác.',
+    ],
     theory: [
-      'Đặt state ở owner gần nhất; chỉ nâng state lên khi nhiều nhánh thực sự cần cùng source of truth.',
-      'Server state có cache, stale time, retry và invalidation khác client state; không nên gom tất cả vào một store.',
-      'Context là cơ chế truyền dependency, không tự tối ưu subscription; tách context theo tần suất thay đổi.',
+      'Trước khi chọn library, phân loại state: local UI, form draft, navigation/URL, server cache, session/global client, persisted/offline và derived data. Mỗi loại có owner, lifetime và consistency model khác nhau.',
+      'Single source of truth không có nghĩa là một global store. State nên nằm ở owner gần nhất có quyền thay đổi nó; nâng lên chỉ khi nhiều nhánh cần phối hợp và không thể derive từ input hiện có.',
+      'Không lưu derived state nếu có thể tính từ props/state trong render. Hai bản sao của cùng dữ liệu tạo synchronization bug; selector hoặc memoization chỉ cần khi calculation thực sự đắt.',
+      'Server state cần cache key chuẩn, stale policy, dedupe, retry, cancellation, invalidation và optimistic reconciliation. Global client store không tự giải quyết các semantics này.',
+      'Context truyền value xuyên tree; mọi consumer đọc context sẽ nhận update khi provider value đổi. Tách state/actions hoặc domain theo tần suất thay đổi, ổn định provider value và tránh context “god object”.',
+      'External store phù hợp khi cần selector subscription, state ngoài React, persistence/middleware hoặc update tần suất cao. Store phải hỗ trợ snapshot nhất quán với concurrent rendering, thường qua useSyncExternalStore.',
+      'Ở quy mô Tech Lead, state boundary phải khớp feature ownership: public commands/events rõ, không cho screen truy cập tùy ý internals của feature khác, và migration từng vertical slice có adapter/test bảo vệ.',
     ],
     useCases: ['Feature boundary', 'Global session', 'Server cache', 'Design system'],
     questions: [
@@ -402,18 +446,18 @@ console.log('D')
       'Context đủ khi dữ liệu đổi ít, consumer không quá rộng và rerender chấp nhận được. External store với selector phù hợp khi state đổi thường xuyên, nhiều consumer chỉ đọc lát cắt nhỏ, cần subscription ngoài React hoặc devtools/middleware.',
       'Đặt boundary/adaptor quanh API cũ, chọn từng vertical slice, thêm test hành vi rồi chuyển owner và consumer theo feature. Chạy song song có kiểm soát, đo render/bug, loại state cũ sau khi không còn reader thay vì thay toàn app một lần.',
     ],
-    code: `const AuthStateContext = React.createContext(null)
-const AuthActionsContext = React.createContext(null)
-
-function AuthProvider({ children }) {
-  const [user, setUser] = React.useState(null)
-  const actions = React.useMemo(() => ({ signOut: () => setUser(null) }), [])
-
-  return (
-    <AuthActionsContext.Provider value={actions}>
+    code: `const AuthStateContext = React.createContext(null);
+const AuthActionsContext = React.createContext(null);
+function AuthProvider({
+  children
+}) {
+  const [user, setUser] = React.useState(null);
+  const actions = React.useMemo(() => ({
+    signOut: () => setUser(null)
+  }), []);
+  return <AuthActionsContext.Provider value={actions}>
       <AuthStateContext.Provider value={user}>{children}</AuthStateContext.Provider>
-    </AuthActionsContext.Provider>
-  )
+    </AuthActionsContext.Provider>;
 }`,
   },
   {
@@ -421,10 +465,22 @@ function AuthProvider({ children }) {
     title: 'Effects, Synchronization & Race Conditions',
     group: 'React',
     summary: 'Dùng Effect để đồng bộ với hệ thống ngoài, có cleanup đối xứng và chống response về sai thứ tự.',
+    plainTheory: [
+      'Effect dùng khi React phải kết nối với thứ nằm ngoài React: gọi API, đăng ký listener, mở socket, chạy timer hoặc điều khiển native API. Nếu chỉ tính dữ liệu để render thì thường không cần Effect.',
+      'Dependency array là danh sách những giá trị Effect đang sử dụng và có thể thay đổi. Thiếu dependency làm Effect đọc dữ liệu cũ; dependency là object/function mới liên tục làm Effect chạy lại liên tục.',
+      'Cleanup là thao tác hoàn tác: đã add listener thì remove listener, đã connect thì disconnect, đã start timer thì clear timer. React chạy cleanup trước khi Effect chạy lại và khi component biến mất.',
+      'Ví dụ userId đổi từ A sang B: request A có thể trả về sau request B và ghi sai profile. Cần hủy request A bằng AbortController hoặc bỏ qua kết quả nếu nó không còn là request hiện tại.',
+      'useLayoutEffect chạy trước khi frame được vẽ nên phù hợp để đo vị trí và đặt tooltip không bị nháy. Nó chặn việc hiển thị frame, vì vậy các việc bình thường nên dùng useEffect.',
+      'Nếu nhiều Effect liên tục set state để kích hoạt lẫn nhau, luồng dữ liệu đã quá rối. Hãy chuyển quy trình đó thành reducer hoặc state machine với các trạng thái và sự kiện rõ ràng.',
+    ],
     theory: [
-      'Effect không dành cho derived state hay event logic; nếu tính được trong render thì không lưu thêm state.',
-      'Mỗi Effect là một quy trình start/stop độc lập. Cleanup phải đảo ngược setup và chạy trước setup mới.',
-      'Request cần abort hoặc ignore kết quả cũ để tránh race condition khi dependency đổi nhanh.',
+      'Effect chỉ dùng để đồng bộ React với external system như network, timer, subscription, native API hoặc imperative widget. Derived data và logic do click gây ra thuộc render/event handler, không thuộc Effect.',
+      'Dependency array không phải lịch chạy tùy chọn; nó mô tả mọi reactive value Effect đọc. Bỏ dependency tạo stale closure, còn object/function mới mỗi render có thể làm Effect reconnect liên tục.',
+      'Mỗi Effect là một process start/stop độc lập. React chạy cleanup cũ trước setup mới và cleanup khi unmount; connect/disconnect, add/remove listener, start/stop timer phải đối xứng.',
+      'Strict Mode chạy setup → cleanup → setup trong development để kiểm tra idempotency. Nếu tạo hai socket, listener hoặc request sai thì cleanup/design đang thiếu, không nên “fix” bằng ref chặn lần hai.',
+      'Fetch trong Effect dễ tạo waterfall, duplicate request và race. Request cũ phải AbortController hoặc ignore result; production app nên cân nhắc route loader/server cache để preload, dedupe và quản lý stale data.',
+      'useLayoutEffect chạy sau host mutation nhưng trước paint, chỉ dùng khi phải measure/chỉnh layout không được nháy. Công việc không liên quan layout dùng useEffect để không chặn frame.',
+      'State machine hoặc reducer thường rõ hơn nhiều Effect phụ thuộc chéo. Nếu Effect A set state kích Effect B rồi B kích C, data flow đã khó dự đoán và cần thiết kế lại.',
     ],
     useCases: ['Network request', 'Subscription', 'Native event listener', 'Timer'],
     questions: [
@@ -438,20 +494,19 @@ function AuthProvider({ children }) {
       'Fetch ở route/data layer hoặc dùng shared server cache để preload và dedupe thay vì mỗi screen chờ screen trước. Abort/ignore request cũ, key cache bằng input, đặt stale policy và dùng Suspense/query orchestration khi phù hợp.',
     ],
     code: `function useUser(userId) {
-  const [user, setUser] = React.useState(null)
-
+  const [user, setUser] = React.useState(null);
   React.useEffect(() => {
-    const controller = new AbortController()
-    fetch('/users/' + userId, { signal: controller.signal })
-      .then(response => response.json())
-      .then(setUser)
-      .catch(error => {
-        if (error.name !== 'AbortError') throw error
-      })
-    return () => controller.abort()
-  }, [userId])
-
-  return user
+    const controller = new AbortController();
+    fetch('/users/' + userId, {
+      signal: controller.signal
+    }).then(response => response.json()).then(setUser).catch(error => {
+      if (error.name !== 'AbortError') {
+        throw error;
+      }
+    });
+    return () => controller.abort();
+  }, [userId]);
+  return user;
 }`,
   },
   {
@@ -459,10 +514,22 @@ function AuthProvider({ children }) {
     title: 'Concurrency & External Stores',
     group: 'React',
     summary: 'Ưu tiên update, giữ input responsive và kết nối external store an toàn với concurrent rendering.',
+    plainTheory: [
+      'Concurrent rendering không có nghĩa React chạy component trên nhiều CPU cùng lúc. Nó có nghĩa React có thể tạm dừng một render chưa quan trọng để xử lý thao tác gấp như người dùng đang gõ.',
+      'startTransition đánh dấu một update là “có thể chờ”. Ví dụ cập nhật chữ trong ô tìm kiếm là gấp, còn render lại danh sách 5.000 item theo từ khóa mới có thể đặt trong transition.',
+      'useDeferredValue cho phần UI chậm tạm dùng giá trị cũ trong lúc React chuẩn bị giá trị mới. Nó không phải debounce: request mạng vẫn có thể được gọi nhiều lần nếu anh không tự giới hạn.',
+      'Suspense boundary quyết định vùng nào hiện loading. Đặt ở root có thể làm trắng cả màn hình; đặt quanh từng vùng dữ liệu giúp header, tab và nội dung cũ vẫn dùng được.',
+      'Tearing là lỗi hai component trên cùng màn hình đọc hai phiên bản khác nhau của một store. useSyncExternalStore cung cấp cách subscribe và lấy snapshot để React bảo đảm cả màn hình dùng cùng một phiên bản.',
+      'Transition không làm đoạn code nặng chạy nhanh hơn. Nếu filter thật sự tốn CPU, vẫn phải giảm dữ liệu, cache kết quả, chia nhỏ công việc hoặc chuyển calculation khỏi đường tương tác chính.',
+    ],
     theory: [
-      'startTransition đánh dấu update không khẩn cấp; render có thể bị interrupt và restart.',
-      'useDeferredValue trì hoãn một value cho subtree chậm nhưng không thay thế debounce network.',
-      'useSyncExternalStore cung cấp snapshot nhất quán và tránh tearing khi đọc store bên ngoài React.',
+      'Concurrent rendering không làm JavaScript chạy đa luồng; nó cho React chia nhỏ, ưu tiên, interrupt và restart render trước commit. UI đã commit vẫn nhất quán, còn render dở không được lộ ra.',
+      'Urgent update như typing/press phải phản hồi ngay; startTransition đánh dấu update dẫn xuất nặng là non-urgent. Transition không được dùng để điều khiển controlled input và không làm calculation tự nhiên nhanh hơn.',
+      'useDeferredValue cho subtree chậm tiếp tục dùng value cũ trong khi React chuẩn bị value mới. Nó điều phối render priority, không giới hạn số request như debounce và không thay thế cache.',
+      'Suspense boundary quyết định phần UI nào thay bằng fallback. Boundary quá cao làm trắng cả screen; boundary quá nhỏ gây nhiều spinner. Khi refresh, transition giúp giữ content cũ thay vì fallback nhấp nháy.',
+      'Tearing là hai consumer trong cùng commit thấy hai version khác nhau của external store. useSyncExternalStore yêu cầu subscribe ổn định và getSnapshot trả cùng reference khi store chưa đổi để React kiểm tra consistency.',
+      'Memo, transition và deferred rendering xử lý các bottleneck khác nhau: memo bỏ calculation lặp, transition đổi priority, virtualization giảm lượng work. Phải xác định đúng loại bottleneck trước khi chọn.',
+      'Code trong render/effect vẫn phải cancellation-safe và idempotent vì render có thể restart. Không dựa vào giả định mỗi update chỉ render hoặc Effect setup đúng một lần.',
     ],
     useCases: ['Search UI nặng', 'Large filtering', 'Shared store', 'Online status'],
     questions: [
@@ -475,15 +542,13 @@ function AuthProvider({ children }) {
       'Debounce trì hoãn việc phát request/callback theo thời gian; useDeferredValue cho subtree chậm dùng value cũ tạm thời; startTransition đánh dấu một state update là không khẩn cấp. Chúng giải quyết ba lớp khác nhau và có thể kết hợp.',
       'Đặt boundary quanh vùng có thể loading độc lập và giữ phần điều hướng/interaction chính ổn định. Tránh một boundary ở root làm trắng toàn màn hình; dùng nested boundaries và transition để giữ content cũ khi refresh.',
     ],
-    code: `function Search({ products }) {
-  const [query, setQuery] = React.useState('')
-  const deferredQuery = React.useDeferredValue(query)
-  const visible = React.useMemo(
-    () => products.filter(item => item.name.includes(deferredQuery)),
-    [products, deferredQuery],
-  )
-
-  return <><TextInput value={query} onChangeText={setQuery} /><ProductList data={visible} /></>
+    code: `function Search({
+  products
+}) {
+  const [query, setQuery] = React.useState('');
+  const deferredQuery = React.useDeferredValue(query);
+  const visible = React.useMemo(() => products.filter(item => item.name.includes(deferredQuery)), [products, deferredQuery]);
+  return <><TextInput value={query} onChangeText={setQuery} /><ProductList data={visible} /></>;
 }`,
   },
   {
@@ -491,10 +556,22 @@ function AuthProvider({ children }) {
     title: 'RN Render Pipeline & Threading',
     group: 'React Native',
     summary: 'Theo dõi update qua Render → Commit → Mount và phân biệt trách nhiệm JS thread với UI thread.',
+    plainTheory: [
+      'Khi component trả về View và Text, React tạo một cây mô tả giao diện. React Native sau đó tạo Shadow Tree ở C++; đây là cây nhẹ dùng để tính layout, chưa phải view thật trên màn hình.',
+      'Yoga nhận style như flex, width và padding để tính kích thước/vị trí. Text có thể cần hỏi hệ điều hành vì mỗi font và nền tảng đo chữ khác nhau.',
+      'Sau khi cây mới hoàn tất, React Native so với cây cũ và tạo danh sách thao tác cần làm. Mount là lúc UI thread tạo, xóa hoặc cập nhật native view thật theo danh sách đó.',
+      'JS thread chạy phần lớn JavaScript, React component và event handler. UI thread vẽ và điều khiển native view. JS bị nghẽn thường làm nút bấm phản hồi chậm; UI bị nghẽn làm scroll và native animation cũng giật.',
+      'Ví dụ scroll vẫn mượt nhưng onPress chậm: ScrollView có thể tiếp tục trên UI thread, còn callback phải chờ JS thread. Đây là dấu hiệu để điều tra, không phải kết luận tuyệt đối; vẫn phải profile cả hai thread.',
+      'Dùng React Profiler để tìm component render tốn thời gian; dùng native profiler để xem main thread, layout và image decoding. Chỉ nhìn FPS tổng không cho biết nghẽn nằm ở bước nào.',
+    ],
     theory: [
-      'React tạo element tree; renderer tạo Shadow Tree, Yoga tính layout, rồi mount thành host views.',
-      'JS thread xử lý React và business logic; UI thread thao tác host view. Nghẽn mỗi thread tạo triệu chứng khác nhau.',
-      'New Renderer có thể xử lý nhiều tree đang tiến hành và ưu tiên update khẩn cấp.',
+      'Render phase reduce composite components thành host components và đồng thời tạo/clones React Shadow Nodes C++. Composite component không có native view tương ứng; chỉ host component như View/Text tham gia Shadow Tree.',
+      'Commit promote immutable Shadow Tree mới thành “next tree” và chạy layout. Yoga tính phần lớn layout trong C++, nhưng Text/TextInput có thể cần platform measurement.',
+      'Mount diff Shadow Tree đã layout với tree hiện tại, tạo mutation list rồi UI thread áp nó vào Host View Tree. Pixel chỉ xuất hiện sau platform draw/composition, nên React commit chưa đồng nghĩa frame đã hiển thị.',
+      'JS thread thường chạy React render và business logic; UI thread là nơi duy nhất mutate host views. New Renderer có thể phân phối phase khác thread tùy loại update, nên không dùng mô hình “mọi layout luôn ở một thread” quá đơn giản.',
+      'JS stall làm event callback, state update và JS-driven animation trễ; UI stall làm scroll/native transition/draw giật. Cả hai có thể cùng giảm nên phải đo JS timeline và native main-thread trace.',
+      'Shadow Tree immutable cho phép nhiều candidate tree tồn tại an toàn và concurrent rendering ưu tiên urgent input. Một render thấp ưu tiên có thể bị bỏ trước mount mà không làm UI rơi vào trạng thái nửa cập nhật.',
+      'Để debug từ triệu chứng tới phase: React Profiler đo render/commit, native profiler đo main thread/layout/draw, frame metrics phân biệt JS/UI, memory profiler tìm mount/image pressure.',
     ],
     useCases: ['Diagnose dropped frames', 'Layout measurement', 'Animation', 'Architecture review'],
     questions: [
@@ -507,20 +584,14 @@ function AuthProvider({ children }) {
       'setState enqueue update; React render và reconcile element tree; RN renderer tạo/clones Shadow Tree; commit chốt tree, Yoga tính layout; mount transaction cập nhật host views trên UI thread; platform compose và hiển thị pixel.',
       'Development thêm warning, profiling hook, source map và logging; simulator không phản ánh CPU/GPU/memory của thiết bị. Release build trên device thật mới gần compiler/runtime, thermal, refresh rate và giới hạn tài nguyên production.',
     ],
-    code: `function HeavyScreen({ items }) {
-  const [selectedId, setSelectedId] = React.useState(null)
-
-  const rows = React.useMemo(() => normalizeRows(items), [items])
-
-  return (
-    <FlatList
-      data={rows}
-      keyExtractor={item => item.id}
-      renderItem={({ item }) => (
-        <Row item={item} selected={item.id === selectedId} onPress={setSelectedId} />
-      )}
-    />
-  )
+    code: `function HeavyScreen({
+  items
+}) {
+  const [selectedId, setSelectedId] = React.useState(null);
+  const rows = React.useMemo(() => normalizeRows(items), [items]);
+  return <FlatList data={rows} keyExtractor={item => item.id} renderItem={({
+    item
+  }) => <Row item={item} selected={item.id === selectedId} onPress={setSelectedId} />} />;
 }`,
   },
   {
@@ -528,10 +599,23 @@ function AuthProvider({ children }) {
     title: 'New Architecture, JSI, Fabric & TurboModules',
     group: 'React Native',
     summary: 'Hiểu khi nào cần interop native và trade-off của giao tiếp type-safe, trực tiếp qua JSI.',
+    plainTheory: [
+      'Kiến trúc cũ dùng Bridge: JavaScript đóng gói dữ liệu thành message rồi gửi bất đồng bộ sang native. Cách này ổn với lời gọi ít, nhưng tốn chi phí khi truyền dữ liệu lớn hoặc gọi liên tục.',
+      'JSI là lớp C++ cho JavaScript gọi trực tiếp object hoặc function native mà không phải serialize mọi thứ qua Bridge. JSI chỉ là đường giao tiếp; nó không phải renderer và cũng không tự làm code an toàn luồng.',
+      'TurboModule là cách viết native module mới trên JSI. Anh khai báo interface TypeScript, Codegen sinh phần kết nối native và module chỉ được load khi cần; API đồng bộ phải thật ngắn vì nó có thể chặn thread đang gọi.',
+      'Fabric là renderer mới của React Native. Nó quản lý Shadow Tree bất biến, hỗ trợ concurrent rendering và cho phép đọc layout đồng bộ trong những trường hợp cần thiết.',
+      'Hermes là JavaScript engine dùng để chạy code JS. Hermes, JSI, TurboModule và Fabric là bốn khái niệm ở các lớp khác nhau; không nên gọi chung tất cả là “New Architecture”.',
+      'Chỉ viết native module khi cần SDK hệ điều hành, xử lý camera/audio/dữ liệu tần suất cao hoặc code native có sẵn. Business logic thông thường giữ ở TypeScript sẽ rẻ hơn để test và bảo trì hai nền tảng.',
+      'Bật New Architecture không tự sửa list render chậm hay image quá nặng. Migration phải kiểm tra library tương thích, test hai platform và đo startup, FPS, memory trước/sau trên device thật.',
+    ],
     theory: [
-      'JSI cho JavaScript giữ reference tới object C++ và gọi trực tiếp, tránh chi phí serialize qua bridge cũ.',
-      'Fabric là renderer mới; TurboModules là hệ module native mới, lazy-load và dùng Codegen cho contract type-safe.',
-      'Bật New Architecture không tự làm app nhanh; phải profile đúng bottleneck và kiểm tra compatibility dependency.',
+      'Legacy Bridge serialize message thành dữ liệu có thể truyền, batch và xử lý bất đồng bộ; overhead rõ khi payload lớn/tần suất cao, đồng thời không hỗ trợ synchronous read cần cho layout/interop hiện đại.',
+      'JSI là C++ interface cho JavaScript runtime giữ reference và gọi host object/function trực tiếp. JSI là nền giao tiếp, không phải một module system hay renderer và không tự bảo đảm thread safety.',
+      'TurboModules là native module system trên JSI: Codegen sinh contract từ typed spec, module có thể lazy-load và hỗ trợ sync/async API. Sync call phải cực ngắn vì có thể block caller và tạo deadlock/jank nếu lạm dụng.',
+      'Fabric là renderer mới dùng immutable C++ Shadow Tree, synchronous layout access và concurrent features. Fabric Native Components dùng Codegen để đồng bộ props/events/commands giữa JS và platform.',
+      'Codegen giảm drift type giữa JS–native nhưng không validate business semantics. Nullability, lifecycle, thread affinity, error mapping và backward compatibility vẫn phải thiết kế và test.',
+      'Hermes là JavaScript engine, không đồng nghĩa JSI/Fabric/TurboModules. Engine, renderer và module system là các lớp riêng; cần nói đúng layer khi phân tích startup hoặc runtime bottleneck.',
+      'Migration phải audit library/native code, build cả hai platform, kiểm tra functional parity, startup/FPS/memory và rollout theo cohort. Bật New Architecture không tự tối ưu business render hay image/list bottleneck.',
     ],
     useCases: ['Native SDK', 'Camera/frame processing', 'High-throughput data', 'Library migration'],
     questions: [
@@ -545,15 +629,13 @@ function AuthProvider({ children }) {
       'Audit dependency và native module, nâng phiên bản theo bước, bật trong CI/canary, port module nhỏ trước, thêm parity/performance tests và staged rollout. Duy trì flag/nhánh tương thích để tắt nhanh trong cửa sổ migration và theo dõi crash/performance theo architecture cohort.',
     ],
     code: `// NativeLocalStorage.ts — contract dùng cho Codegen
-import type { TurboModule } from 'react-native'
-import { TurboModuleRegistry } from 'react-native'
-
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 export interface Spec extends TurboModule {
-  setItem(value: string, key: string): void
-  getItem(key: string): string | null
+  setItem(value: string, key: string): void;
+  getItem(key: string): string | null;
 }
-
-export default TurboModuleRegistry.getEnforcing<Spec>('NativeLocalStorage')`,
+export default TurboModuleRegistry.getEnforcing<Spec>('NativeLocalStorage');`,
   },
   {
     id: 'rn-list-performance',
@@ -602,17 +684,26 @@ export default TurboModuleRegistry.getEnforcing<Spec>('NativeLocalStorage')`,
       'Memo dùng shallow equality. Object, array hoặc callback mới ở mỗi render làm props khác reference dù nội dung giống nhau, khiến row render lại. Ổn định data/callback có chủ đích và tránh tạo object style/handler không cần thiết trong renderItem.',
       'Dùng đúng model máy/OS và dữ liệu production-like, chạy release build, ghi lại kịch bản scroll, đo JS/UI frames, CPU và memory. Sau đó cô lập image, row complexity, list config và state updates từng yếu tố; chốt bằng benchmark lặp lại và regression test.',
     ],
-    code: `const ITEM_HEIGHT = 72
-
-const Row = React.memo(function Row({ item, onPress }) {
-  return <Pressable onPress={() => onPress(item.id)}><Text>{item.title}</Text></Pressable>
-})
-
-function Feed({ items }) {
-  const openItem = React.useCallback(id => navigate('Detail', { id }), [])
-  return <FlatList data={items} renderItem={({ item }) => <Row item={item} onPress={openItem} />}
-    keyExtractor={item => item.id}
-    getItemLayout={(_, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index })} />
+    code: `const ITEM_HEIGHT = 72;
+const Row = React.memo(function Row({
+  item,
+  onPress
+}) {
+  return <Pressable onPress={() => onPress(item.id)}><Text>{item.title}</Text></Pressable>;
+});
+function Feed({
+  items
+}) {
+  const openItem = React.useCallback(id => navigate('Detail', {
+    id
+  }), []);
+  return <FlatList data={items} renderItem={({
+    item
+  }) => <Row item={item} onPress={openItem} />} keyExtractor={item => item.id} getItemLayout={(_, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index
+  })} />;
 }`,
   },
   {
@@ -651,19 +742,15 @@ function Feed({ items }) {
   navigationP95Ms: 350,
   slowFrameRateMax: 0.05,
   frozenFrameRateMax: 0.001,
-  memoryP95Mb: 320,
-}
-
+  memoryP95Mb: 320
+};
 function evaluateRelease(metrics) {
-  const failures = Object.entries(PERFORMANCE_BUDGET)
-    .filter(([metric, limit]) => metrics[metric] > limit)
-    .map(([metric]) => metric)
-
+  const failures = Object.entries(PERFORMANCE_BUDGET).filter(([metric, limit]) => metrics[metric] > limit).map(([metric]) => metric);
   return {
     approved: failures.length === 0,
     failures,
-    action: failures.length ? 'STOP_ROLLOUT' : 'CONTINUE_ROLLOUT',
-  }
+    action: failures.length ? 'STOP_ROLLOUT' : 'CONTINUE_ROLLOUT'
+  };
 }`,
   },
   {
@@ -671,10 +758,22 @@ function evaluateRelease(metrics) {
     title: 'Navigation, Deep Links & State Restoration',
     group: 'React Native',
     summary: 'Thiết kế route contract typed, parse input không tin cậy và khôi phục navigation state có version.',
+    plainTheory: [
+      'Navigation nên được xem như state: app đang ở auth flow hay main flow, stack hiện có những route nào và route nào được phép mở tiếp. Cách này dễ test hơn việc gọi navigate rải rác khắp component.',
+      'Deep link và notification là dữ liệu từ bên ngoài nên phải kiểm tra host, path, param và quyền truy cập. Không được lấy id từ URL rồi mở thẳng màn hình nhạy cảm.',
+      'Nếu deep link cần đăng nhập, hãy lưu ý định mở màn hình, chuyển sang login, rồi kiểm tra quyền và mở lại sau khi login thành công. Khi logout phải reset protected stack để nút Back không quay lại màn hình cũ.',
+      'Cold start có thể nhận cả URL và notification. Cần một coordinator gom hai nguồn thành một kiểu intent, chọn nguồn ưu tiên và đánh dấu đã xử lý để không navigate hai lần.',
+      'Chỉ persist navigation state có thể serialize và có ích. Gắn version cho dữ liệu đã lưu; khi app đổi route schema thì migrate hoặc bỏ state cũ và về màn hình an toàn.',
+      'Route param nên là id nhỏ thay vì cả object product/user. Screen lấy dữ liệu mới từ cache/database để deep link, restore và navigate bình thường đều cho cùng kết quả.',
+    ],
     theory: [
-      'Deep link là external input: validate scheme, host, route và params trước khi điều hướng.',
-      'Navigation state cần serializable nếu muốn persist; migration/versioning tránh restore schema cũ bị lỗi.',
-      'Auth gating phải lưu intent rồi resume sau login, đồng thời chặn route không được phép.',
+      'Navigation là application state machine, không chỉ chuỗi lệnh navigate. Route model typed cần định nghĩa state hợp lệ, ownership của nested navigator và transition được phép giữa auth/onboarding/main flows.',
+      'Deep link, universal/app link và notification đều là external untrusted input. Validate scheme/host/path/param, authorization và resource existence trước khi tạo route; invalid input phải về safe fallback.',
+      'Cold start có thể nhận initial URL và notification gần đồng thời. Một launch coordinator phải normalize thành intent, ưu tiên theo policy, dedupe bằng stable ID và consume đúng một lần.',
+      'Auth gate lưu pending intent, đưa người dùng qua login, kiểm tra quyền sau khi có session rồi resume. Không render screen nhạy cảm trước authorization và không để logout quay Back vào protected stack.',
+      'Persist navigation state chỉ với dữ liệu serializable và thật sự có giá trị phục hồi. Gắn schema version, migration và TTL; nếu restore fail thì reset an toàn thay vì làm app kẹt lúc startup.',
+      'Route params nên nhỏ và là identifier, không mang object cache lớn dễ stale. Screen tự resolve data từ source of truth để deep link, restore và normal navigation có cùng behavior.',
+      'Test matrix phải bao gồm foreground/background/killed, logged-in/logged-out, expired link, duplicate source, back behavior và version cũ. Telemetry cần lưu sanitized intent source và outcome.',
     ],
     useCases: ['Universal/App Links', 'Push notification', 'Auth flow', 'Restore after process death'],
     questions: [
@@ -692,13 +791,17 @@ function evaluateRelease(metrics) {
   config: {
     screens: {
       Home: '',
-      Product: { path: 'products/:id', parse: { id: value => String(value) } },
-    },
-  },
-}
-
+      Product: {
+        path: 'products/:id',
+        parse: {
+          id: value => String(value)
+        }
+      }
+    }
+  }
+};
 function Root() {
-  return <NavigationContainer linking={linking}><AppNavigator /></NavigationContainer>
+  return <NavigationContainer linking={linking}><AppNavigator /></NavigationContainer>;
 }`,
   },
   {
@@ -706,10 +809,23 @@ function Root() {
     title: 'Offline-first, Cache & Data Consistency',
     group: 'Architecture',
     summary: 'Thiết kế source of truth cục bộ, mutation queue, conflict policy và đồng bộ idempotent.',
+    plainTheory: [
+      'Offline-first nghĩa là màn hình đọc từ database trên máy để vẫn dùng được khi mất mạng. Server vẫn là nguồn xác nhận cuối cùng, còn UI phải cho biết dữ liệu nào đang chờ đồng bộ hoặc đã lỗi.',
+      'Khi người dùng sửa dữ liệu, lưu thay đổi local và thêm một item vào outbox trong cùng transaction. Nếu app crash sau bước này, outbox vẫn còn để gửi lại khi mở app.',
+      'Mạng có thể timeout sau khi server đã xử lý thành công. Vì vậy mỗi mutation cần idempotency key; gửi lại cùng key phải nhận cùng kết quả chứ không tạo thêm order hoặc payment.',
+      'Optimistic update cho cảm giác nhanh nhưng phải có kế hoạch khi server từ chối: rollback, lấy dữ liệu server rồi merge, hoặc báo người dùng chọn. Không được âm thầm ghi đè dữ liệu mới hơn.',
+      'Conflict resolution tùy nghiệp vụ. Like có thể last-write-wins; profile có thể merge từng field; tài liệu cộng tác cần thuật toán phức tạp hơn; giao dịch tiền không được merge tùy ý.',
+      'Sync worker cần retry tăng dần, giới hạn số lần, giữ thứ tự mutation phụ thuộc nhau và tách item lỗi vĩnh viễn để một item không chặn cả queue.',
+      'Database migration phải test với dữ liệu lớn và trường hợp app bị tắt giữa chừng. Cần version, checkpoint hoặc transaction và telemetry để biết bao nhiêu thiết bị migrate thất bại.',
+    ],
     theory: [
-      'Offline-first cần phân biệt server truth, local cache và pending mutations; UI đọc một model hợp nhất.',
-      'Optimistic update phải có rollback hoặc reconciliation; request retry cần idempotency key.',
-      'Conflict resolution là quyết định sản phẩm: last-write-wins, merge theo field hoặc yêu cầu người dùng xử lý.',
+      'Offline-first cần local database làm read model khả dụng ngay; server vẫn là authority theo domain policy. UI quan sát model hợp nhất gồm confirmed data, pending mutation và sync/error metadata.',
+      'Local write và outbox record phải nằm trong cùng transaction để không có trạng thái “UI đã đổi nhưng mutation bị mất”. Outbox sống qua process death và worker retry khi connectivity phù hợp.',
+      'At-least-once delivery thực tế dễ triển khai hơn exactly-once. Mỗi mutation cần durable ID/idempotency key; server lưu kết quả theo key để retry sau timeout/crash không tạo side effect trùng.',
+      'Optimistic update phải định nghĩa pending UI, rollback/rebase và lỗi cuối cùng. Không giữ snapshot vô hạn nếu entity tiếp tục đổi; reconciliation thường cần version hoặc server response canonical.',
+      'Conflict policy thuộc product/domain: last-write-wins đơn giản nhưng có thể mất dữ liệu, merge per-field cần version/clock, collaborative edit có thể cần CRDT/OT, case nhạy cảm nên yêu cầu người dùng quyết định.',
+      'Sync engine cần ordering theo entity/dependency, exponential backoff có jitter, poison-message handling và giới hạn queue. Connectivity “online” không chứng minh API reachable nên request vẫn phải timeout/retry.',
+      'Schema migration phải transactional hoặc resumable, có version/checkpoint, test trên database kích thước production và telemetry về duration/failure. Corruption/recovery path là phần của thiết kế, không phải edge case bỏ qua.',
     ],
     useCases: ['Poor network', 'Optimistic UI', 'Background sync', 'Collaborative data'],
     questions: [
@@ -723,17 +839,25 @@ function Root() {
       'Theo dõi cache hit/stale age, sync latency, queue depth, retry/conflict rate và migration success/failure theo schema/app/device. Migration cần transaction, checkpoint/backup phù hợp, crash recovery và kill switch để tránh corrupt hàng loạt.',
     ],
     code: `async function saveTodo(todo) {
-  const mutation = { id: crypto.randomUUID(), type: 'todo.upsert', payload: todo }
+  const mutation = {
+    id: crypto.randomUUID(),
+    type: 'todo.upsert',
+    payload: todo
+  };
   await database.transaction(async tx => {
-    await tx.todos.upsert({ ...todo, syncStatus: 'pending' })
-    await tx.outbox.insert(mutation)
-  })
-  scheduleSync()
+    await tx.todos.upsert({
+      ...todo,
+      syncStatus: 'pending'
+    });
+    await tx.outbox.insert(mutation);
+  });
+  scheduleSync();
 }
-
 async function flush(mutation) {
-  await api.send(mutation.payload, { idempotencyKey: mutation.id })
-  await database.outbox.remove(mutation.id)
+  await api.send(mutation.payload, {
+    idempotencyKey: mutation.id
+  });
+  await database.outbox.remove(mutation.id);
 }`,
   },
   {
@@ -741,10 +865,23 @@ async function flush(mutation) {
     title: 'Testing, Observability & Delivery',
     group: 'Architecture',
     summary: 'Xây quality gates theo rủi ro, đo production và rollout có thể dừng hoặc rollback.',
+    plainTheory: [
+      'Không cần E2E cho mọi thứ. Pure function kiểm tra bằng unit test; feature gọi API/storage kiểm tra bằng integration test; chỉ giữ E2E cho hành trình quan trọng như login, thanh toán và khôi phục dữ liệu.',
+      'Test nên kiểm tra hành vi người dùng nhìn thấy thay vì state nội bộ của component. Như vậy refactor implementation không làm test hỏng nếu behavior vẫn đúng.',
+      'Với payment, ngoài happy path phải test double tap, timeout sau khi server đã charge, retry, app bị kill và callback đến trễ. Đây mới là những case gây lỗi production đắt tiền.',
+      'Crash-free rate chưa đủ. Cần theo dõi startup, slow/frozen frame, API latency, memory/OOM và tỷ lệ người dùng hoàn tất hành trình; app không crash nhưng quá chậm vẫn là release xấu.',
+      'Metric phải chia theo app version, OS và device tier. Average toàn bộ có thể che việc bản mới chỉ làm Android cấu hình thấp chậm nghiêm trọng.',
+      'Rollout theo phần trăm nhỏ trước, có feature flag hoặc kill switch và đặt sẵn ngưỡng dừng. Khi sự cố xảy ra, team chỉ việc làm theo tiêu chí đã thống nhất thay vì tranh luận trong lúc production đang cháy.',
+      'Postmortem phải tạo thay đổi cụ thể: regression test, alert, owner và deadline. Viết “cẩn thận hơn lần sau” không ngăn lỗi lặp lại.',
+    ],
     theory: [
-      'Test behavior qua public UI; unit test pure logic, integration test feature boundary, E2E giữ cho critical journeys.',
-      'Crash-free sessions chưa đủ: cần startup, JS/UI stalls, API latency, device/OS/app version và business metrics.',
-      'Release an toàn dùng staged rollout, feature flag, kill switch, source maps và ownership/on-call rõ ràng.',
+      'Test strategy dựa trên risk, không dựa vào tỷ lệ pyramid cứng. Unit test pure rule/state machine; integration test feature với storage/network boundary; contract test API/native module; E2E chỉ giữ critical journey giá trị cao.',
+      'Test behavior qua public surface, tránh assert implementation detail dễ vỡ khi refactor. Với async UI, chờ observable outcome thay vì sleep; fixture và clock/random/network phải deterministic.',
+      'Quality gate nên gồm typecheck, lint/static analysis, targeted regression, related integration và build native. Payment/auth/migration cần thêm idempotency, permission, rollback và failure-injection tests.',
+      'Observability phải nối technical signal với user journey: crash/ANR, JS exception, slow/frozen frame, startup/navigation, API latency/error, memory/OOM cùng conversion hoặc task completion.',
+      'Metric luôn phân đoạn theo app version, OS, device tier, architecture cohort và screen. Average toàn hệ thống che regression ở low-end Android hoặc một flow ít traffic nhưng quan trọng.',
+      'Release an toàn cần staged rollout, feature flag/kill switch, source map/symbol, dashboard và owner trực. Threshold dừng/rollback phải đặt trước release, không tranh luận khi incident đang xảy ra.',
+      'Postmortem không dừng ở lỗi cá nhân: ghi detection gap, guardrail thiếu, contributing factors và action có owner/deadline. Tech Lead theo dõi action đến khi có regression test, alert hoặc thay đổi quy trình thực sự.',
     ],
     useCases: ['CI quality gate', 'Incident response', 'OTA/native release', 'Tech debt governance'],
     questions: [
@@ -758,15 +895,19 @@ async function flush(mutation) {
       'Dừng rollout khi vượt crash SLO hoặc có severity cao trên journey chính; so cohort/control và rollback/kill switch nếu không giảm thiểu nhanh. Postmortem ghi timeline, detection gap, root cause, contributing factors, action owner và regression guard.',
     ],
     code: `it('retries payment without creating a duplicate charge', async () => {
-  server.use(failOnceThenSucceed({ chargeId: 'charge-1' }))
-  render(<CheckoutScreen />)
-
-  await user.press(screen.getByRole('button', { name: 'Pay' }))
-  await user.press(screen.getByRole('button', { name: 'Retry' }))
-
-  expect(await screen.findByText('Payment successful')).toBeVisible()
-  expect(server.chargesForCurrentOrder()).toHaveLength(1)
-})`,
+  server.use(failOnceThenSucceed({
+    chargeId: 'charge-1'
+  }));
+  render(<CheckoutScreen />);
+  await user.press(screen.getByRole('button', {
+    name: 'Pay'
+  }));
+  await user.press(screen.getByRole('button', {
+    name: 'Retry'
+  }));
+  expect(await screen.findByText('Payment successful')).toBeVisible();
+  expect(server.chargesForCurrentOrder()).toHaveLength(1);
+});`,
   },
   {
     id: 'ai-task-brief',
@@ -796,9 +937,9 @@ async function flush(mutation) {
   success: ['One charge per order', 'Regression test passes', 'Typecheck passes'],
   autonomy: {
     allowed: ['inspect files', 'edit scoped code', 'run tests'],
-    approvalRequired: ['change API contract', 'delete data', 'deploy'],
-  },
-}`,
+    approvalRequired: ['change API contract', 'delete data', 'deploy']
+  }
+};`,
   },
   {
     id: 'ai-engineering-loop',
@@ -822,18 +963,17 @@ async function flush(mutation) {
       'Xem chất lượng assertion và coverage của đường lỗi, final diff, runtime logs/trace, contract với dependency, accessibility/visual behavior, concurrency và dữ liệu production-like. Test xanh chỉ chứng minh các case đã viết.',
     ],
     code: `async function engineeringLoop(agent, task) {
-  const evidence = await agent.inspect(task)
-  const hypothesis = await agent.explainRootCause(evidence)
-  const patch = await agent.makeSmallestChange(hypothesis)
-  const verification = await agent.runChecks([
-    'targeted regression test',
-    'related test suite',
-    'typecheck and build',
-    'review final diff',
-  ])
-
-  if (!verification.every(check => check.passed)) throw new Error('Task is not done')
-  return { patch, evidence: verification }
+  const evidence = await agent.inspect(task);
+  const hypothesis = await agent.explainRootCause(evidence);
+  const patch = await agent.makeSmallestChange(hypothesis);
+  const verification = await agent.runChecks(['targeted regression test', 'related test suite', 'typecheck and build', 'review final diff']);
+  if (!verification.every(check => check.passed)) {
+    throw new Error('Task is not done');
+  }
+  return {
+    patch,
+    evidence: verification
+  };
 }`,
   },
   {
@@ -898,16 +1038,23 @@ description: Review React Native changes that may affect FPS, memory or startup.
   type: 'object',
   required: ['severity', 'file', 'evidence', 'recommendation'],
   properties: {
-    severity: { enum: ['critical', 'high', 'medium', 'low'] },
-    file: { type: 'string' },
-    evidence: { type: 'string' },
-    recommendation: { type: 'string' },
+    severity: {
+      enum: ['critical', 'high', 'medium', 'low']
+    },
+    file: {
+      type: 'string'
+    },
+    evidence: {
+      type: 'string'
+    },
+    recommendation: {
+      type: 'string'
+    }
   },
-  additionalProperties: false,
-}
-
-const workstreams = ['render performance', 'data consistency', 'test coverage']
-const findings = await Promise.all(workstreams.map(scope => audit(scope, findingSchema)))`,
+  additionalProperties: false
+};
+const workstreams = ['render performance', 'data consistency', 'test coverage'];
+const findings = await Promise.all(workstreams.map(scope => audit(scope, findingSchema)));`,
   },
   {
     id: 'ai-evals-review',
@@ -930,19 +1077,24 @@ const findings = await Promise.all(workstreams.map(scope => audit(scope, finding
       'Luôn review auth/payment/privacy, destructive data migration, permission/security, public API, dependency/supply chain, native release và thay đổi khó rollback. Test giảm rủi ro nhưng không thay quyền quyết định và accountability.',
       'Đặt baseline trước triển khai rồi so lead/cycle time, first-pass acceptance, escaped defect, review minutes, rework, token/tool cost và developer satisfaction theo loại task. Tính cả thời gian verify/sửa output, tránh chỉ đếm code được sinh.',
     ],
-    code: `const evalCases = [
-  { name: 'happy path', task: fixFixture('normal'), mustPass: ['tests', 'typecheck'] },
-  { name: 'race condition', task: fixFixture('double-submit'), mustPass: ['idempotency-test'] },
-  { name: 'scope control', task: fixFixture('unrelated-files'), mustPass: ['no-unrelated-diff'] },
-]
-
-const report = await runWorkflowEval(evalCases)
-const releaseAllowed =
-  report.passRate === 1 &&
-  report.securityFindings === 0 &&
-  report.unreviewedHighRiskChanges === 0
-
-if (!releaseAllowed) throw new Error('AI workflow regression')`,
+    code: `const evalCases = [{
+  name: 'happy path',
+  task: fixFixture('normal'),
+  mustPass: ['tests', 'typecheck']
+}, {
+  name: 'race condition',
+  task: fixFixture('double-submit'),
+  mustPass: ['idempotency-test']
+}, {
+  name: 'scope control',
+  task: fixFixture('unrelated-files'),
+  mustPass: ['no-unrelated-diff']
+}];
+const report = await runWorkflowEval(evalCases);
+const releaseAllowed = report.passRate === 1 && report.securityFindings === 0 && report.unreviewedHighRiskChanges === 0;
+if (!releaseAllowed) {
+  throw new Error('AI workflow regression');
+}`,
   },
 ]
 
