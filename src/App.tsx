@@ -21,22 +21,22 @@ export default function App() {
   }, [theme])
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
-        <button type="button" onClick={() => setSection('fundamentals')} className="font-bold tracking-tight text-slate-950 dark:text-white">
+        <button type="button" onClick={() => setSection('fundamentals')} className="font-bold tracking-tight text-neutral-950 dark:text-white">
           JS Practices
         </button>
         <div className="flex items-center gap-2">
-          <nav className="flex rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800" aria-label="Khu vực học tập">
-            <button type="button" onClick={() => setSection('fundamentals')} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${section === 'fundamentals' ? 'bg-white text-indigo-700 shadow-sm dark:bg-slate-700 dark:text-indigo-300' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>Nền tảng</button>
-            <button type="button" onClick={() => setSection('practices')} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${section === 'practices' ? 'bg-white text-indigo-700 shadow-sm dark:bg-slate-700 dark:text-indigo-300' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>Bài tập</button>
+          <nav className="flex rounded-xl bg-neutral-200/70 p-1 dark:bg-neutral-800" aria-label="Khu vực học tập">
+            <button type="button" onClick={() => setSection('fundamentals')} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${section === 'fundamentals' ? 'bg-white text-plum-700 shadow-sm dark:bg-neutral-700 dark:text-plum-300' : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'}`}>Nền tảng</button>
+            <button type="button" onClick={() => setSection('practices')} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${section === 'practices' ? 'bg-white text-plum-700 shadow-sm dark:bg-neutral-700 dark:text-plum-300' : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'}`}>Bài tập</button>
           </nav>
           <button
             type="button"
             onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
             aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
             title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg shadow-sm transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-lg shadow-sm transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700"
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>

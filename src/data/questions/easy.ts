@@ -7,14 +7,17 @@ export const easyQuestions = [
         examples: ["nums=[2,7,11,15], target=9 → [0,1]"],
         functionSignature: "function twoSum(nums, target) {}",
         starterCode: `function twoSum(nums, target) {
-  const map = new Map();
-  for (let i = 0; i < nums.length; i++) {
-    const need = target - nums[i];
-    if (map.has(need)) {
-      return [map.get(need), i];
+  const indexByNumber = new Map();
+
+  for (let index = 0; index < nums.length; index++) {
+    const neededNumber = target - nums[index];
+
+    if (indexByNumber.has(neededNumber)) {
+      return [indexByNumber.get(neededNumber), index];
     }
-    map.set(nums[i], i);
+    indexByNumber.set(nums[index], index);
   }
+
   return [];
 }`,
         testCases: [{ input: [[2,7,11,15], 9], output: [0,1] }]
@@ -27,15 +30,20 @@ export const easyQuestions = [
         description: "Return the reversed string.",
         examples: [`"hello" → "olleh"`],
         functionSignature: "function reverseString(s) {}",
-        starterCode: `function reverseString(s) {
+        starterCode: `function reverseString(text) {
   let result = '';
-  for (let i = s.length - 1; i >= 0; i--) {
-    result += s[i];
+
+  for (let index = text.length - 1; index >= 0; index--) {
+    result += text[index];
   }
+
   return result;
 }`,
-        arrayFunctionCode: `function reverseString(s) {
-  return s.split('').reverse().join('');
+        arrayFunctionCode: `function reverseString(text) {
+  const characters = text.split('');
+  const reversedItems = characters.reverse();
+
+  return reversedItems.join('');
 }`,
         testCases: [{ input: ["hello"], output: "olleh" }]
     },
@@ -46,24 +54,33 @@ export const easyQuestions = [
         description: "Return true if t is an anagram of s.",
         examples: [`"anagram","nagaram" → true`],
         functionSignature: "function isAnagram(s,t) {}",
-        starterCode: `function isAnagram(s, t) {
-  if (s.length !== t.length) {
+        starterCode: `function isAnagram(firstText, secondText) {
+  if (firstText.length !== secondText.length) {
     return false;
   }
-  const count = {};
-  for (const char of s) {
-    count[char] = (count[char] || 0) + 1;
+
+  const characterCounts = {};
+
+  for (const char of firstText) {
+    characterCounts[char] = (characterCounts[char] || 0) + 1;
   }
-  for (const char of t) {
-    if (!count[char]) {
+
+  for (const char of secondText) {
+    if (!characterCounts[char]) {
       return false;
     }
-    count[char]--;
+    characterCounts[char]--;
   }
+
   return true;
 }`,
-        arrayFunctionCode: `function isAnagram(s, t) {
-  return s.split('').sort().join('') === t.split('').sort().join('');
+        arrayFunctionCode: `function isAnagram(firstText, secondText) {
+  const characters = firstText.split('');
+  const sortedItems = characters.sort();
+  const characters2 = secondText.split('');
+  const sortedItems2 = characters2.sort();
+
+  return sortedItems.join('') === sortedItems2.join('');
 }`,
         testCases: [{ input: ["anagram","nagaram"], output: true }]
     },
@@ -74,20 +91,25 @@ export const easyQuestions = [
         description: "Return true if s reads the same forward and backward.",
         examples: [`"racecar" → true`],
         functionSignature: "function isPalindrome(s) {}",
-        starterCode: `function isPalindrome(s) {
+        starterCode: `function isPalindrome(text) {
   let left = 0;
-  let right = s.length - 1;
+  let right = text.length - 1;
+
   while (left < right) {
-    if (s[left] !== s[right]) {
+    if (text[left] !== text[right]) {
       return false;
     }
     left++;
     right--;
   }
+
   return true;
 }`,
-        arrayFunctionCode: `function isPalindrome(s) {
-  return s === s.split('').reverse().join('');
+        arrayFunctionCode: `function isPalindrome(text) {
+  const characters = text.split('');
+  const reversedItems = characters.reverse();
+
+  return text === reversedItems.join('');
 }`,
         testCases: [{ input: ["racecar"], output: true }]
     },
@@ -98,20 +120,22 @@ export const easyQuestions = [
         description: "Return array 1..n with Fizz/Buzz/FizzBuzz rules.",
         examples: [`5 → ["1","2","Fizz","4","Buzz"]`],
         functionSignature: "function fizzBuzz(n) {}",
-        starterCode: `function fizzBuzz(n) {
-  const res = [];
-  for (let i = 1; i <= n; i++) {
-    if (i % 15 === 0) {
-      res.push('FizzBuzz');
-    } else if (i % 3 === 0) {
-      res.push('Fizz');
-    } else if (i % 5 === 0) {
-      res.push('Buzz');
+        starterCode: `function fizzBuzz(limit) {
+  const result = [];
+
+  for (let index = 1; index <= limit; index++) {
+    if (index % 15 === 0) {
+      result.push('FizzBuzz');
+    } else if (index % 3 === 0) {
+      result.push('Fizz');
+    } else if (index % 5 === 0) {
+      result.push('Buzz');
     } else {
-      res.push(String(i));
+      result.push(String(index));
     }
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: [5], output: ["1","2","Fizz","4","Buzz"] }]
     },
@@ -124,11 +148,13 @@ export const easyQuestions = [
         functionSignature: "function findMax(nums) {}",
         starterCode: `function findMax(nums) {
   let max = nums[0];
-  for (let i = 1; i < nums.length; i++) {
-    if (nums[i] > max) {
-      max = nums[i];
+
+  for (let index = 1; index < nums.length; index++) {
+    if (nums[index] > max) {
+      max = nums[index];
     }
   }
+
   return max;
 }`,
         arrayFunctionCode: `function findMax(nums) {
@@ -145,12 +171,14 @@ export const easyQuestions = [
         functionSignature: "function containsDuplicate(nums) {}",
         starterCode: `function containsDuplicate(nums) {
   const seen = new Set();
+
   for (const number of nums) {
     if (seen.has(number)) {
       return true;
     }
     seen.add(number);
   }
+
   return false;
 }`,
         arrayFunctionCode: `function containsDuplicate(nums) {
@@ -166,13 +194,15 @@ export const easyQuestions = [
         examples: ["[0,1,0,3,12] → [1,3,12,0,0]"],
         functionSignature: "function moveZeroes(nums) {}",
         starterCode: `function moveZeroes(nums) {
-  let j = 0;
-  for (let i = 0; i < nums.length; i++) {
-    if (nums[i] !== 0) {
-      [nums[i], nums[j]] = [nums[j], nums[i]];
-      j++;
+  let nextIndex = 0;
+
+  for (let index = 0; index < nums.length; index++) {
+    if (nums[index] !== 0) {
+      [nums[index], nums[nextIndex]] = [nums[nextIndex], nums[index]];
+      nextIndex++;
     }
   }
+
   return nums;
 }`,
         testCases: [{ input: [[0,1,0,3,12]], output: [1,3,12,0,0] }]
@@ -185,14 +215,16 @@ export const easyQuestions = [
         examples: ["[1,2,3] → [1,2,4]"],
         functionSignature: "function plusOne(digits) {}",
         starterCode: `function plusOne(d) {
-  for (let i = d.length - 1; i >= 0; i--) {
-    if (d[i] < 9) {
-      d[i]++;
+  for (let index = d.length - 1; index >= 0; index--) {
+    if (d[index] < 9) {
+      d[index]++;
+
       return d;
     }
-    d[i] = 0;
+    d[index] = 0;
   }
   d.unshift(1);
+
   return d;
 }`,
         testCases: [{ input: [[1,2,3]], output: [1,2,4] }]
@@ -205,19 +237,23 @@ export const easyQuestions = [
         examples: ["([-1,0,3,5,9,12], 9) → 4"],
         functionSignature: "function search(nums,target) {}",
         starterCode: `function search(nums, target) {
-  let l = 0;
-  let r = nums.length - 1;
-  while (l <= r) {
-    const m = l + r >> 1;
-    if (nums[m] === target) {
-      return m;
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left <= right) {
+    const middle = left + right >> 1;
+
+    if (nums[middle] === target) {
+      return middle;
     }
-    if (nums[m] < target) {
-      l = m + 1;
+
+    if (nums[middle] < target) {
+      left = middle + 1;
     } else {
-      r = m - 1;
+      right = middle - 1;
     }
   }
+
   return -1;
 }`,
         testCases: [{ input: [[-1,0,3,5,9,12],9], output: 4 }]
@@ -229,16 +265,19 @@ export const easyQuestions = [
         description: "Return index of first non-repeating char, else -1.",
         examples: [`"leetcode" → 0`],
         functionSignature: "function firstUniqChar(s) {}",
-        starterCode: `function firstUniqChar(s) {
-  const c = {};
-  for (const ch of s) {
-    c[ch] = (c[ch] || 0) + 1;
+        starterCode: `function firstUniqChar(text) {
+  const counts = {};
+
+  for (const character of text) {
+    counts[character] = (counts[character] || 0) + 1;
   }
-  for (let i = 0; i < s.length; i++) {
-    if (c[s[i]] === 1) {
-      return i;
+
+  for (let index = 0; index < text.length; index++) {
+    if (counts[text[index]] === 1) {
+      return index;
     }
   }
+
   return -1;
 }`,
         testCases: [{ input: ["leetcode"], output: 0 }]
@@ -250,23 +289,25 @@ export const easyQuestions = [
         description: "Check if a bracket string is valid.",
         examples: [`"()[]{}" → true`],
         functionSignature: "function isValid(s) {}",
-        starterCode: `function isValid(s) {
-  const st = [];
-  const m = {
+        starterCode: `function isValid(text) {
+  const openingBrackets = [];
+  const matchingOpeningBracket = {
     ')': '(',
     ']': '[',
     '}': '{'
   };
-  for (const c of s) {
-    if (c in m) {
-      if (st.pop() !== m[c]) {
+
+  for (const character of text) {
+    if (character in matchingOpeningBracket) {
+      if (openingBrackets.pop() !== matchingOpeningBracket[character]) {
         return false;
       }
     } else {
-      st.push(c);
+      openingBrackets.push(character);
     }
   }
-  return st.length === 0;
+
+  return openingBrackets.length === 0;
 }`,
         testCases: [{ input: ["()[]{}"], output: true }]
     },
@@ -278,16 +319,19 @@ export const easyQuestions = [
         examples: [`"aa","aab" → true`],
         functionSignature: "function canConstruct(ransom,mag) {}",
         starterCode: `function canConstruct(ransom, mag) {
-  const m = {};
-  for (const c of mag) {
-    m[c] = (m[c] || 0) + 1;
+  const counts = {};
+
+  for (const character of mag) {
+    counts[character] = (counts[character] || 0) + 1;
   }
-  for (const c of ransom) {
-    if (!m[c]) {
+
+  for (const character of ransom) {
+    if (!counts[character]) {
       return false;
     }
-    m[c]--;
+    counts[character]--;
   }
+
   return true;
 }`,
         testCases: [{ input: ["aa","aab"], output: true }]
@@ -301,28 +345,27 @@ export const easyQuestions = [
         functionSignature: "function mergeTwoSorted(arr1, arr2) {}",
         starterCode: `function mergeTwoSorted(arr1, arr2) {
   const result = [];
+  let index = 0;
+  let nextIndex = 0;
 
-  let i = 0;
-  let j = 0;
-
-  while (i < arr1.length && j < arr2.length) {
-    if (arr1[i] <= arr2[j]) {
-      result.push(arr1[i]);
-      i++;
+  while (index < arr1.length && nextIndex < arr2.length) {
+    if (arr1[index] <= arr2[nextIndex]) {
+      result.push(arr1[index]);
+      index++;
     } else {
-      result.push(arr2[j]);
-      j++;
+      result.push(arr2[nextIndex]);
+      nextIndex++;
     }
   }
 
-  while (i < arr1.length) {
-    result.push(arr1[i]);
-    i++;
+  while (index < arr1.length) {
+    result.push(arr1[index]);
+    index++;
   }
 
-  while (j < arr2.length) {
-    result.push(arr2[j]);
-    j++;
+  while (nextIndex < arr2.length) {
+    result.push(arr2[nextIndex]);
+    nextIndex++;
   }
 
   return result;
@@ -337,14 +380,16 @@ export const easyQuestions = [
         examples: ["[1,1,2] → 2"],
         functionSignature: "function removeDuplicates(nums) {}",
         starterCode: `function removeDuplicates(nums) {
-  let i = 0;
+  let index = 0;
+
   for (const n of nums) {
-    if (i === 0 || n !== nums[i - 1]) {
-      nums[i] = n;
-      i++;
+    if (index === 0 || n !== nums[index - 1]) {
+      nums[index] = n;
+      index++;
     }
   }
-  return i;
+
+  return index;
 }`,
         testCases: [{ input: [[1,1,2]], output: 2 }]
     },
@@ -356,13 +401,16 @@ export const easyQuestions = [
         examples: ["[7,1,5,3,6,4] → 5"],
         functionSignature: "function maxProfit(prices) {}",
         starterCode: `function maxProfit(prices) {
-  let min = Infinity;
-  let ans = 0;
-  for (const p of prices) {
-    min = Math.min(min, p);
-    ans = Math.max(ans, p - min);
+  let minPrice = prices[0];
+  let maxProfit = 0;
+
+  for (let index = 1; index < prices.length; index++) {
+    minPrice = Math.min(minPrice, prices[index]);
+    const profit = prices[index] - minPrice;
+    maxProfit = Math.max(maxProfit, profit);
   }
-  return ans;
+
+  return maxProfit;
 }`,
         testCases: [{ input: [[7,1,5,3,6,4]], output: 5 }]
     },
@@ -373,19 +421,22 @@ export const easyQuestions = [
         description: "Return intersection allowing duplicates.",
         examples: ["[1,2,2,1] & [2,2] → [2,2]"],
         functionSignature: "function intersect(a,b) {}",
-        starterCode: `function intersect(a, b) {
-  const m = {};
-  const res = [];
-  for (const x of a) {
-    m[x] = (m[x] || 0) + 1;
+        starterCode: `function intersect(firstArray, secondArray) {
+  const counts = {};
+  const result = [];
+
+  for (const value of firstArray) {
+    counts[value] = (counts[value] || 0) + 1;
   }
-  for (const y of b) {
-    if (m[y] > 0) {
-      res.push(y);
-      m[y]--;
+
+  for (const value of secondArray) {
+    if (counts[value] > 0) {
+      result.push(value);
+      counts[value]--;
     }
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: [[1,2,2,1],[2,2]], output: [2,2] }]
     },
@@ -396,18 +447,21 @@ export const easyQuestions = [
         description: "Return true if s and t are isomorphic.",
         examples: [`"egg","add" → true`],
         functionSignature: "function isIsomorphic(s,t) {}",
-        starterCode: `function isIsomorphic(s, t) {
-  const m1 = {};
-  const m2 = {};
-  for (let i = 0; i < s.length; i++) {
-    const a = s[i];
-    const b = t[i];
-    if (m1[a] && m1[a] !== b || m2[b] && m2[b] !== a) {
+        starterCode: `function isIsomorphic(firstText, secondText) {
+  const forwardMap = {};
+  const reverseMap = {};
+
+  for (let index = 0; index < firstText.length; index++) {
+    const sourceCharacter = firstText[index];
+    const targetCharacter = secondText[index];
+
+    if (forwardMap[sourceCharacter] && forwardMap[sourceCharacter] !== targetCharacter || reverseMap[targetCharacter] && reverseMap[targetCharacter] !== sourceCharacter) {
       return false;
     }
-    m1[a] = b;
-    m2[b] = a;
+    forwardMap[sourceCharacter] = targetCharacter;
+    reverseMap[targetCharacter] = sourceCharacter;
   }
+
   return true;
 }`,
         testCases: [{ input: ["egg","add"], output: true }]
@@ -419,13 +473,15 @@ export const easyQuestions = [
         description: "Distinct ways to climb to the top (1 or 2 steps).",
         examples: ["n=3 → 3"],
         functionSignature: "function climbStairs(n) {}",
-        starterCode: `function climbStairs(n) {
-  let a = 1;
-  let b = 1;
-  for (let i = 2; i <= n; i++) {
-    [a, b] = [a + b, a];
+        starterCode: `function climbStairs(steps) {
+  let previousTwo = 1;
+  let previousOne = 1;
+
+  for (let index = 2; index <= steps; index++) {
+    [previousTwo, previousOne] = [previousTwo + previousOne, previousTwo];
   }
-  return a;
+
+  return previousTwo;
 }`,
         testCases: [{ input: [3], output: 3 }]
     },
@@ -437,18 +493,21 @@ export const easyQuestions = [
         examples: ["[3,2,3] → 3"],
         functionSignature: "function majorityElement(nums) {}",
         starterCode: `function majorityElement(nums) {
-  let c = 0;
+  let candidate = 0;
   let cand = null;
-  for (const x of nums) {
-    if (c === 0) {
-      cand = x;
+
+  for (const value of nums) {
+    if (candidate === 0) {
+      cand = value;
     }
-    if (x === cand) {
-      c++;
+
+    if (value === cand) {
+      candidate++;
     } else {
-      c--;
+      candidate--;
     }
   }
+
   return cand;
 }`,
         testCases: [{ input: [[3,2,3]], output: 3 }]

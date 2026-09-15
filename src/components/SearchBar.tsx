@@ -23,13 +23,13 @@ export function SearchBar({
   return (
     <label className="relative block">
       <span className="sr-only">Tìm câu hỏi</span>
-      <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">⌕</span>
+      <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-neutral-400">⌕</span>
       <input
         type="search"
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-indigo-950"
+        className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-11 pr-4 text-sm text-neutral-900 shadow-sm outline-none transition placeholder:text-neutral-400 focus:border-plum-400 focus:ring-4 focus:ring-plum-100 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100 dark:focus:ring-plum-950"
       />
     </label>
   )

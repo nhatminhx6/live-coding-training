@@ -7,34 +7,43 @@ export const mediumQuestions = [
         examples: ["[-1,0,1,2,-1,-4] → [[-1,-1,2],[-1,0,1]]"],
         functionSignature: "function threeSum(nums) {}",
         starterCode: `function threeSum(nums) {
-  nums.sort((a, b) => a - b);
-  const res = [];
-  for (let i = 0; i < nums.length - 2; i++) {
-    if (i && nums[i] === nums[i - 1]) {
+  nums.sort((first, second) => {
+    return first - second;
+  });
+  const result = [];
+
+  for (let index = 0; index < nums.length - 2; index++) {
+    if (index && nums[index] === nums[index - 1]) {
       continue;
     }
-    let l = i + 1;
-    let r = nums.length - 1;
-    while (l < r) {
-      const s = nums[i] + nums[l] + nums[r];
-      if (s === 0) {
-        res.push([nums[i], nums[l], nums[r]]);
-        while (l < r && nums[l] === nums[l + 1]) {
-          l++;
+
+    let left = index + 1;
+    let right = nums.length - 1;
+
+    while (left < right) {
+      const sum = nums[index] + nums[left] + nums[right];
+
+      if (sum === 0) {
+        result.push([nums[index], nums[left], nums[right]]);
+
+        while (left < right && nums[left] === nums[left + 1]) {
+          left++;
         }
-        while (l < r && nums[r] === nums[r - 1]) {
-          r--;
+
+        while (left < right && nums[right] === nums[right - 1]) {
+          right--;
         }
-        l++;
-        r--;
-      } else if (s < 0) {
-        l++;
+        left++;
+        right--;
+      } else if (sum < 0) {
+        left++;
       } else {
-        r--;
+        right--;
       }
     }
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: [[-1,0,1,2,-1,-4]], output: [[-1,-1,2],[-1,0,1]] }]
     },
@@ -45,18 +54,22 @@ export const mediumQuestions = [
         description: "Length of the longest substring without repeating characters.",
         examples: [`"abcabcbb" → 3`],
         functionSignature: "function lengthOfLongestSubstring(s) {}",
-        starterCode: `function lengthOfLongestSubstring(s) {
-  const seen = new Map();
-  let st = 0;
-  let ans = 0;
-  for (let i = 0; i < s.length; i++) {
-    if (seen.has(s[i]) && seen.get(s[i]) >= st) {
-      st = seen.get(s[i]) + 1;
+        starterCode: `function lengthOfLongestSubstring(text) {
+  const window = new Set();
+  let left = 0;
+  let maxLength = 0;
+
+  for (let right = 0; right < text.length; right++) {
+    while (window.has(text[right])) {
+      window.delete(text[left]);
+      left++;
     }
-    seen.set(s[i], i);
-    ans = Math.max(ans, i - st + 1);
+    window.add(text[right]);
+    const currentLength = right - left + 1;
+    maxLength = Math.max(maxLength, currentLength);
   }
-  return ans;
+
+  return maxLength;
 }`,
         testCases: [{ input: ["abcabcbb"], output: 3 }]
     },
@@ -68,19 +81,27 @@ export const mediumQuestions = [
         examples: [`["eat","tea","tan","ate","nat","bat"] → [["eat","tea","ate"],["tan","nat"],["bat"]]`],
         functionSignature: "function groupAnagrams(strs) {}",
         starterCode: `function groupAnagrams(strs) {
-  const m = new Map();
-  for (const s of strs) {
-    const count = Array(26).fill(0);
-    for (const char of s) {
+  const groups = new Map();
+
+  for (const word of strs) {
+    const values = Array(26);
+    const count = values.fill(0);
+
+    for (const char of word) {
       count[char.charCodeAt(0) - 97]++;
     }
-    const k = count.join('#');
-    if (!m.has(k)) {
-      m.set(k, []);
+
+    const key = count.join('#');
+
+    if (!groups.has(key)) {
+      groups.set(key, []);
     }
-    m.get(k).push(s);
+
+    const items = groups.get(key);
+    items.push(word);
   }
-  return Array.from(m.values());
+
+  return Array.from(groups.values());
 }`,
         testCases: [{ input: [["eat","tea","tan","ate","nat","bat"]], output: [["eat","tea","ate"],["tan","nat"],["bat"]] }]
     },
@@ -92,25 +113,43 @@ export const mediumQuestions = [
         examples: ["[1,1,1,2,2,3], k=2 → [1,2]"],
         functionSignature: "function topKFrequent(nums,k) {}",
         starterCode: `function topKFrequent(nums, k) {
-  const m = new Map();
-  for (const x of nums) {
-    m.set(x, (m.get(x) || 0) + 1);
+  const frequencyMap = new Map();
+
+  for (const num of nums) {
+    const currentFrequency = frequencyMap.get(num) || 0;
+    const newFrequency = currentFrequency + 1;
+    frequencyMap.set(num, newFrequency);
   }
-  const buckets = Array.from({
-    length: nums.length + 1
-  }, () => []);
-  for (const [number, count] of m) {
-    buckets[count].push(number);
+
+  const bucketCount = nums.length + 1;
+  const frequencyBuckets = Array.from({ length: bucketCount }, () => {
+    return [];
+  });
+
+  for (const [number, frequency] of frequencyMap) {
+    const bucket = frequencyBuckets[frequency];
+    bucket.push(number);
   }
+
   const result = [];
-  for (let count = buckets.length - 1; count >= 0 && result.length < k; count--) {
-    for (const number of buckets[count]) {
+  const highestFrequency = frequencyBuckets.length - 1;
+
+  for (let frequency = highestFrequency; frequency >= 0; frequency--) {
+    if (result.length >= k) {
+      break;
+    }
+
+    const numbers = frequencyBuckets[frequency];
+
+    for (const number of numbers) {
       result.push(number);
+
       if (result.length === k) {
         break;
       }
     }
   }
+
   return result;
 }`,
         testCases: [{ input: [[1,1,1,2,2,3],2], output: [1,2] }]
@@ -123,18 +162,22 @@ export const mediumQuestions = [
         examples: ["[1,2,3,4] → [24,12,8,6]"],
         functionSignature: "function productExceptSelf(nums) {}",
         starterCode: `function productExceptSelf(nums) {
-  const res = Array(nums.length).fill(1);
-  let pre = 1;
-  let suf = 1;
-  for (let i = 0; i < nums.length; i++) {
-    res[i] *= pre;
-    pre *= nums[i];
+  const values = Array(nums.length);
+  const result = values.fill(1);
+  let prefix = 1;
+  let suffix = 1;
+
+  for (let index = 0; index < nums.length; index++) {
+    result[index] *= prefix;
+    prefix *= nums[index];
   }
-  for (let i = nums.length - 1; i >= 0; i--) {
-    res[i] *= suf;
-    suf *= nums[i];
+
+  for (let index = nums.length - 1; index >= 0; index--) {
+    result[index] *= suffix;
+    suffix *= nums[index];
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: [[1,2,3,4]], output: [24,12,8,6] }]
     },
@@ -147,14 +190,17 @@ export const mediumQuestions = [
         functionSignature: "function rotate(matrix) {}",
         starterCode: `function rotate(matrix) {
   const n = matrix.length;
-  for (let i = 0; i < n; i++) {
-    for (let j = i; j < n; j++) {
-      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
+
+  for (let index = 0; index < n; index++) {
+    for (let nextIndex = index; nextIndex < n; nextIndex++) {
+      [matrix[index][nextIndex], matrix[nextIndex][index]] = [matrix[nextIndex][index], matrix[index][nextIndex]];
     }
   }
-  for (let i = 0; i < n; i++) {
-    matrix[i].reverse();
+
+  for (let index = 0; index < n; index++) {
+    matrix[index].reverse();
   }
+
   return matrix;
 }`,
         testCases: [{ input: [[[1,2,3],[4,5,6],[7,8,9]]], output: [[7,4,1],[8,5,2],[9,6,3]] }]
@@ -167,24 +213,28 @@ export const mediumQuestions = [
         examples: ["[[1,1,1],[1,0,1],[1,1,1]] → [[1,0,1],[0,0,0],[1,0,1]]"],
         functionSignature: "function setZeroes(matrix) {}",
         starterCode: `function setZeroes(matrix) {
-  const R = new Set();
-  const C = new Set();
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[0].length; j++) {
-      if (matrix[i][j] === 0) {
-        R.add(i);
-        C.add(j);
+  const zeroRows = new Set();
+  const zeroColumns = new Set();
+
+  for (let index = 0; index < matrix.length; index++) {
+    for (let nextIndex = 0; nextIndex < matrix[0].length; nextIndex++) {
+      if (matrix[index][nextIndex] === 0) {
+        zeroRows.add(index);
+        zeroColumns.add(nextIndex);
       }
     }
   }
-  for (const r of R) {
-    matrix[r].fill(0);
+
+  for (const row of zeroRows) {
+    matrix[row].fill(0);
   }
-  for (const c of C) {
-    for (let r = 0; r < matrix.length; r++) {
-      matrix[r][c] = 0;
+
+  for (const column of zeroColumns) {
+    for (let row = 0; row < matrix.length; row++) {
+      matrix[row][column] = 0;
     }
   }
+
   return matrix;
 }`,
         testCases: [{ input: [[[1,1,1],[1,0,1],[1,1,1]]], output: [[1,0,1],[0,0,0],[1,0,1]] }]
@@ -197,34 +247,39 @@ export const mediumQuestions = [
         examples: ["[[1,2,3],[4,5,6],[7,8,9]] → [1,2,3,6,9,8,7,4,5]"],
         functionSignature: "function spiralOrder(matrix) {}",
         starterCode: `function spiralOrder(matrix) {
-  const out = [];
-  let t = 0;
-  let b = matrix.length - 1;
-  let l = 0;
-  let r = matrix[0].length - 1;
-  while (t <= b && l <= r) {
-    for (let i = l; i <= r; i++) {
-      out.push(matrix[t][i]);
+  const result = [];
+  let top = 0;
+  let bottom = matrix.length - 1;
+  let left = 0;
+  let right = matrix[0].length - 1;
+
+  while (top <= bottom && left <= right) {
+    for (let index = left; index <= right; index++) {
+      result.push(matrix[top][index]);
     }
-    t++;
-    for (let i = t; i <= b; i++) {
-      out.push(matrix[i][r]);
+    top++;
+
+    for (let index = top; index <= bottom; index++) {
+      result.push(matrix[index][right]);
     }
-    r--;
-    if (t <= b) {
-      for (let i = r; i >= l; i--) {
-        out.push(matrix[b][i]);
+    right--;
+
+    if (top <= bottom) {
+      for (let index = right; index >= left; index--) {
+        result.push(matrix[bottom][index]);
       }
-      b--;
+      bottom--;
     }
-    if (l <= r) {
-      for (let i = b; i >= t; i--) {
-        out.push(matrix[i][l]);
+
+    if (left <= right) {
+      for (let index = bottom; index >= top; index--) {
+        result.push(matrix[index][left]);
       }
-      l++;
+      left++;
     }
   }
-  return out;
+
+  return result;
 }`,
         testCases: [{ input: [[[1,2,3],[4,5,6],[7,8,9]]], output: [1,2,3,6,9,8,7,4,5] }]
     },
@@ -235,19 +290,22 @@ export const mediumQuestions = [
         description: "Return true if s can be segmented into words from dict.",
         examples: [`"leetcode", ["leet","code"] → true`],
         functionSignature: "function wordBreak(s,wordDict) {}",
-        starterCode: `function wordBreak(s, d) {
-  const set = new Set(d);
-  const dp = Array(s.length + 1).fill(false);
+        starterCode: `function wordBreak(text, dictionary) {
+  const set = new Set(dictionary);
+  const values = Array(text.length + 1);
+  const dp = values.fill(false);
   dp[0] = true;
-  for (let i = 1; i <= s.length; i++) {
-    for (let j = 0; j < i; j++) {
-      if (dp[j] && set.has(s.slice(j, i))) {
-        dp[i] = true;
+
+  for (let index = 1; index <= text.length; index++) {
+    for (let nextIndex = 0; nextIndex < index; nextIndex++) {
+      if (dp[nextIndex] && set.has(text.slice(nextIndex, index))) {
+        dp[index] = true;
         break;
       }
     }
   }
-  return dp[s.length];
+
+  return dp[text.length];
 }`,
         testCases: [{ input: ["leetcode",["leet","code"]], output: true }]
     },
@@ -259,15 +317,18 @@ export const mediumQuestions = [
         examples: ["[1,2,5], amount=11 → 3"],
         functionSignature: "function coinChange(coins,amount) {}",
         starterCode: `function coinChange(coins, amount) {
-  const dp = Array(amount + 1).fill(Infinity);
+  const values = Array(amount + 1);
+  const dp = values.fill(Infinity);
   dp[0] = 0;
-  for (let a = 1; a <= amount; a++) {
-    for (const c of coins) {
-      if (a - c >= 0) {
-        dp[a] = Math.min(dp[a], dp[a - c] + 1);
+
+  for (let currentAmount = 1; currentAmount <= amount; currentAmount++) {
+    for (const coin of coins) {
+      if (currentAmount - coin >= 0) {
+        dp[currentAmount] = Math.min(dp[currentAmount], dp[currentAmount - coin] + 1);
       }
     }
   }
+
   return dp[amount] === Infinity ? -1 : dp[amount];
 }`,
         testCases: [{ input: [[1,2,5],11], output: 3 }]
@@ -279,24 +340,29 @@ export const mediumQuestions = [
         description: "Return all unique combinations where candidates sum to target.",
         examples: ["[2,3,6,7], 7 → [[2,2,3],[7]]"],
         functionSignature: "function combinationSum(candidates,target) {}",
-        starterCode: `function combinationSum(c, t) {
-  const res = [];
-  c.sort((a, b) => a - b);
-  function dfs(i, cur, sum) {
-    if (sum === t) {
-      res.push(cur.slice());
+        starterCode: `function combinationSum(candidates, target) {
+  const result = [];
+  candidates.sort((first, second) => {
+    return first - second;
+  });
+  function dfs(index, combination, currentSum) {
+    if (currentSum === target) {
+      result.push(combination.slice());
+
       return;
     }
-    if (sum > t || i === c.length) {
+
+    if (currentSum > target || index === candidates.length) {
       return;
     }
-    cur.push(c[i]);
-    dfs(i, cur, sum + c[i]);
-    cur.pop();
-    dfs(i + 1, cur, sum);
+    combination.push(candidates[index]);
+    dfs(index, combination, currentSum + candidates[index]);
+    combination.pop();
+    dfs(index + 1, combination, currentSum);
   }
   dfs(0, [], 0);
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: [[2,3,6,7],7], output: [[2,2,3],[7]] }]
     },
@@ -307,22 +373,24 @@ export const mediumQuestions = [
         description: "Return the longest palindromic substring.",
         examples: [`"babad" → "bab" (or "aba")`],
         functionSignature: "function longestPalindrome(s) {}",
-        starterCode: `function longestPalindrome(s) {
-  let res = '';
-  function ex(l, r) {
-    while (l >= 0 && r < s.length && s[l] === s[r]) {
-      if (r - l + 1 > res.length) {
-        res = s.slice(l, r + 1);
+        starterCode: `function longestPalindrome(text) {
+  let result = '';
+  function ex(left, right) {
+    while (left >= 0 && right < text.length && text[left] === text[right]) {
+      if (right - left + 1 > result.length) {
+        result = text.slice(left, right + 1);
       }
-      l--;
-      r++;
+      left--;
+      right++;
     }
   }
-  for (let i = 0; i < s.length; i++) {
-    ex(i, i);
-    ex(i, i + 1);
+
+  for (let index = 0; index < text.length; index++) {
+    ex(index, index);
+    ex(index, index + 1);
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: ["babad"], output: "bab" }]
     },
@@ -333,19 +401,25 @@ export const mediumQuestions = [
         description: "Find max area formed by two lines.",
         examples: ["[1,8,6,2,5,4,8,3,7] → 49"],
         functionSignature: "function maxArea(height) {}",
-        starterCode: `function maxArea(h) {
-  let l = 0;
-  let r = h.length - 1;
-  let ans = 0;
-  while (l < r) {
-    ans = Math.max(ans, Math.min(h[l], h[r]) * (r - l));
-    if (h[l] < h[r]) {
-      l++;
+        starterCode: `function maxArea(heights) {
+  let left = 0;
+  let right = heights.length - 1;
+  let maxArea = 0;
+
+  while (left < right) {
+    const width = right - left;
+    const containerHeight = Math.min(heights[left], heights[right]);
+    const currentArea = width * containerHeight;
+    maxArea = Math.max(maxArea, currentArea);
+
+    if (heights[left] < heights[right]) {
+      left++;
     } else {
-      r--;
+      right--;
     }
   }
-  return ans;
+
+  return maxArea;
 }`,
         testCases: [{ input: [[1,8,6,2,5,4,8,3,7]], output: 49 }]
     },
@@ -357,22 +431,34 @@ export const mediumQuestions = [
         examples: ["[[0,30],[5,10],[15,20]] → 2"],
         functionSignature: "function minMeetingRooms(intervals) {}",
         starterCode: `function minMeetingRooms(intervals) {
-  const s = intervals.map(i => i[0]).sort((a, b) => a - b);
-  const e = intervals.map(i => i[1]).sort((a, b) => a - b);
-  let i = 0;
-  let j = 0;
+  const mappedItems = intervals.map(i => {
+    return i[0];
+  });
+  const starts = mappedItems.sort((first, second) => {
+    return first - second;
+  });
+  const mappedItems2 = intervals.map(i => {
+    return i[1];
+  });
+  const ends = mappedItems2.sort((first, second) => {
+    return first - second;
+  });
+  let index = 0;
+  let nextIndex = 0;
   let rooms = 0;
   let maxR = 0;
-  while (i < s.length) {
-    if (s[i] < e[j]) {
+
+  while (index < starts.length) {
+    if (starts[index] < ends[nextIndex]) {
       rooms++;
-      i++;
+      index++;
       maxR = Math.max(maxR, rooms);
     } else {
       rooms--;
-      j++;
+      nextIndex++;
     }
   }
+
   return maxR;
 }`,
         testCases: [{ input: [[[0,30],[5,10],[15,20]]], output: 2 }]
@@ -388,19 +474,23 @@ export const mediumQuestions = [
   const target = nums.length - k;
   let left = 0;
   let right = nums.length - 1;
+
   while (left <= right) {
     const pivot = nums[right];
     let position = left;
-    for (let i = left; i < right; i++) {
-      if (nums[i] <= pivot) {
-        [nums[i], nums[position]] = [nums[position], nums[i]];
+
+    for (let index = left; index < right; index++) {
+      if (nums[index] <= pivot) {
+        [nums[index], nums[position]] = [nums[position], nums[index]];
         position++;
       }
     }
     [nums[position], nums[right]] = [nums[right], nums[position]];
+
     if (position === target) {
       return nums[position];
     }
+
     if (position < target) {
       left = position + 1;
     } else {
@@ -417,33 +507,44 @@ export const mediumQuestions = [
         description: "Return true if you can finish all courses.",
         examples: ["n=2, [[1,0]] → true"],
         functionSignature: "function canFinish(n,prereq) {}",
-        starterCode: `function canFinish(n, pr) {
-  const g = Array.from({
-    length: n
-  }, () => []);
-  const deg = Array(n).fill(0);
-  for (const [a, b] of pr) {
-    g[b].push(a);
-    deg[a]++;
+        starterCode: `function canFinish(courseCount, prerequisites) {
+  const graph = Array.from({
+    length: courseCount
+  }, () => {
+    return [];
+  });
+  const values = Array(courseCount);
+  const inDegree = values.fill(0);
+
+  for (const [first, second] of prerequisites) {
+    graph[second].push(first);
+    inDegree[first]++;
   }
-  const q = [];
-  for (let i = 0; i < n; i++) {
-    if (deg[i] === 0) {
-      q.push(i);
+
+  const queue = [];
+
+  for (let index = 0; index < courseCount; index++) {
+    if (inDegree[index] === 0) {
+      queue.push(index);
     }
   }
-  let cnt = 0;
-  while (q.length) {
-    const u = q.shift();
-    cnt++;
-    for (const v of g[u]) {
-      deg[v]--;
-      if (deg[v] === 0) {
-        q.push(v);
+
+  let completedCount = 0;
+
+  while (queue.length) {
+    const course = queue.shift();
+    completedCount++;
+
+    for (const nextCourse of graph[course]) {
+      inDegree[nextCourse]--;
+
+      if (inDegree[nextCourse] === 0) {
+        queue.push(nextCourse);
       }
     }
   }
-  return cnt === n;
+
+  return completedCount === courseCount;
 }`,
         testCases: [{ input: [2,[[1,0]]], output: true }]
     },
@@ -454,32 +555,35 @@ export const mediumQuestions = [
         description: "Count islands of '1's in a grid.",
         examples: ["typical grid → 3"],
         functionSignature: "function numIslands(grid) {}",
-        starterCode: `function numIslands(g) {
-  if (!g.length) {
+        starterCode: `function numIslands(grid) {
+  if (!grid.length) {
     return 0;
   }
-  const m = g.length;
-  const n = g[0].length;
-  let c = 0;
-  function dfs(i, j) {
-    if (i < 0 || j < 0 || i >= m || j >= n || g[i][j] !== '1') {
+
+  const rowCount = grid.length;
+  const columnCount = grid[0].length;
+  let islandCount = 0;
+  function dfs(index, nextIndex) {
+    if (index < 0 || nextIndex < 0 || index >= rowCount || nextIndex >= columnCount || grid[index][nextIndex] !== '1') {
       return;
     }
-    g[i][j] = '0';
-    dfs(i + 1, j);
-    dfs(i - 1, j);
-    dfs(i, j + 1);
-    dfs(i, j - 1);
+    grid[index][nextIndex] = '0';
+    dfs(index + 1, nextIndex);
+    dfs(index - 1, nextIndex);
+    dfs(index, nextIndex + 1);
+    dfs(index, nextIndex - 1);
   }
-  for (let i = 0; i < m; i++) {
-    for (let j = 0; j < n; j++) {
-      if (g[i][j] === '1') {
-        c++;
-        dfs(i, j);
+
+  for (let index = 0; index < rowCount; index++) {
+    for (let nextIndex = 0; nextIndex < columnCount; nextIndex++) {
+      if (grid[index][nextIndex] === '1') {
+        islandCount++;
+        dfs(index, nextIndex);
       }
     }
   }
-  return c;
+
+  return islandCount;
 }`,
         testCases: [{ input: [[['1','1','0'],['0','1','0'],['1','0','1']]], output: 3 }]
     },
@@ -490,36 +594,44 @@ export const mediumQuestions = [
         description: "Return minimum window in s containing all chars of t.",
         examples: [`"ADOBECODEBANC","ABC" → "BANC"`],
         functionSignature: "function minWindow(s,t) {}",
-        starterCode: `function minWindow(s, t) {
+        starterCode: `function minWindow(text, target) {
   const need = {};
   let needCnt = 0;
-  for (const c of t) {
-    need[c] = (need[c] || 0) + 1;
+
+  for (const character of target) {
+    need[character] = (need[character] || 0) + 1;
     needCnt++;
   }
-  let l = 0;
-  let res = "";
+
+  let left = 0;
+  let result = "";
   let best = Infinity;
-  for (let r = 0; r < s.length; r++) {
-    const c = s[r];
-    if (need[c] > 0) {
+
+  for (let right = 0; right < text.length; right++) {
+    const character = text[right];
+
+    if (need[character] > 0) {
       needCnt--;
     }
-    need[c] = (need[c] || 0) - 1;
+    need[character] = (need[character] || 0) - 1;
+
     while (needCnt === 0) {
-      if (r - l + 1 < best) {
-        best = r - l + 1;
-        res = s.slice(l, r + 1);
+      if (right - left + 1 < best) {
+        best = right - left + 1;
+        result = text.slice(left, right + 1);
       }
-      const lc = s[l];
-      need[lc]++;
-      if (need[lc] > 0) {
+
+      const leftCharacter = text[left];
+      need[leftCharacter]++;
+
+      if (need[leftCharacter] > 0) {
         needCnt++;
       }
-      l++;
+      left++;
     }
   }
-  return res;
+
+  return result;
 }`,
         testCases: [{ input: ["ADOBECODEBANC","ABC"], output: "BANC" }]
     },
@@ -530,25 +642,31 @@ export const mediumQuestions = [
         description: "Given string digits, return number of ways to decode.",
         examples: [`"12" → 2`],
         functionSignature: "function numDecodings(s) {}",
-        starterCode: `function numDecodings(s) {
-  if (!s || s[0] === '0') {
+        starterCode: `function numDecodings(text) {
+  if (!text || text[0] === '0') {
     return 0;
   }
-  let a = 1;
-  let b = 1;
-  for (let i = 1; i < s.length; i++) {
-    let c = 0;
-    if (s[i] !== '0') {
-      c += b;
+
+  let previousTwo = 1;
+  let previousOne = 1;
+
+  for (let index = 1; index < text.length; index++) {
+    let currentWays = 0;
+
+    if (text[index] !== '0') {
+      currentWays += previousOne;
     }
-    const two = +(s[i - 1] + s[i]);
-    if (two >= 10 && two <= 26) {
-      c += a;
+
+    const twoDigitValue = +(text[index - 1] + text[index]);
+
+    if (twoDigitValue >= 10 && twoDigitValue <= 26) {
+      currentWays += previousTwo;
     }
-    a = b;
-    b = c;
+    previousTwo = previousOne;
+    previousOne = currentWays;
   }
-  return b;
+
+  return previousOne;
 }`,
         testCases: [{ input: ["12"], output: 2 }]
     },

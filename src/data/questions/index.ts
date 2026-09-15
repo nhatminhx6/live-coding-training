@@ -4,6 +4,7 @@ import { hardQuestions } from './hard'
 import type { Question } from '../../types'
 import { alternativeSolutions } from './alternativeSolutions'
 import { questionGuides } from './guides'
+import { solutionExplanations } from './solutionExplanations'
 
 export const questions: Question[] = [
     ...easyQuestions,
@@ -21,5 +22,8 @@ for (const question of questions) {
     }
     if (!questionGuides[question.slug]?.problem.trim() || !questionGuides[question.slug]?.explanation.trim()) {
         throw new Error(`Practice "${question.slug}" phải có đề bài và giải thích ví dụ dễ hiểu`)
+    }
+    if (!solutionExplanations[question.slug]) {
+        throw new Error(`Practice "${question.slug}" phải có giải thích cách tư duy`)
     }
 }

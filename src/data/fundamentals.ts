@@ -1,3 +1,5 @@
+import { advancedReactNativeFundamentals } from './advancedReactNativeFundamentals'
+
 export interface Fundamental {
   id: string
   title: string
@@ -909,6 +911,7 @@ async function flush(mutation) {
   expect(server.chargesForCurrentOrder()).toHaveLength(1);
 });`,
   },
+  ...advancedReactNativeFundamentals,
   {
     id: 'ai-task-brief',
     title: 'Task Brief & Context Engineering',
